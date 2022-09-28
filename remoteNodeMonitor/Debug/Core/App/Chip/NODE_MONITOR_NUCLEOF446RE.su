@@ -1,0 +1,15 @@
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:77:6:Chip_Init	8	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:109:6:HAL_UART_RxCpltCallback	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:154:9:Brd_UART_DataReady	4	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:159:9:Brd_UART_GetData	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:165:9:Brd_Find_Word	288	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:183:11:Skyla_GetInfo	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:222:6:PrettySend_Skyla_Info_toPi	32	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:250:6:Pi_Check_Program_Flag	24	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:360:6:Skyla1_Check_Flag	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:380:6:Creed1_Check_Flag	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:400:6:Skyla2_Check_Flag	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:420:6:Creed2_Check_Flag	16	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:447:6:Chip_Update	4	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:460:6:SystemClock_Config	88	static
+../Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.c:511:6:Error_Handler	4	static,ignoring_inline_asm
