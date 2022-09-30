@@ -29,9 +29,18 @@ void App_Init(void)
 ******************************************************************************/
 void App_Update(void)
 {
-	Pi_Check_Program_Flag();
-//	Skyla1_Check_Flag();
-//	Creed1_Check_Flag();
-//	Skyla2_Check_Flag();
-//	Creed2_Check_Flag();
+	switch(Get_Application_State())
+	{
+		case MOLLY_SKYLA1:
+			Skyla1_Molly_App();
+			break;
+
+		case MONITOR:
+//			HAL_UART_Transmit(&huart1, (uint8_t*)"L|monitor mode \n", 16, 500);
+			Skyla1_Check_Flag();
+			Creed1_Check_Flag();
+			Skyla2_Check_Flag();
+			Creed2_Check_Flag();
+			break;
+	}
 }

@@ -1,11 +1,11 @@
 Core/App/APP.o: ../Core/App/APP.c ../Core/App/APP.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h \
- c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\datatypes.h \
- c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\hardware.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Options.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Debugger.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Hardware.h \
- c:\users\jessica\ doe\documents\remotenodemonitor\core\app\chip\node_monitor_nucleof446re.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h \
+ c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\datatypes.h \
+ c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\hardware.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Options.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Debugger.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Hardware.h \
+ c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\chip\node_monitor_nucleof446re.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -33,17 +33,17 @@ Core/App/APP.o: ../Core/App/APP.c ../Core/App/APP.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/usart.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/main.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/main.h \
  ../Core/Inc/gpio.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/DataTypes.h
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/DataTypes.h
 ../Core/App/APP.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h:
-c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\datatypes.h:
-c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\hardware.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Options.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Debugger.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Hardware.h:
-c:\users\jessica\ doe\documents\remotenodemonitor\core\app\chip\node_monitor_nucleof446re.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h:
+c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\datatypes.h:
+c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\hardware.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Options.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Debugger.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Hardware.h:
+c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\chip\node_monitor_nucleof446re.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -71,6 +71,6 @@ c:\users\jessica\ doe\documents\remotenodemonitor\core\app\chip\node_monitor_nuc
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Core/Inc/usart.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/main.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/main.h:
 ../Core/Inc/gpio.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/DataTypes.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/DataTypes.h:

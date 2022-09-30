@@ -14,17 +14,24 @@
 #include "DataTypes.h"
 
 
+/* Program States -----------------------------------------------------------*/
+#define MONITOR									0
+#define MOLLY_SKYLA1							1
+#define MOLLY_SKYLA2						2
+
+
 /* Setup Functions -----------------------------------------------------------*/
 void Error_Handler(void);
 void Chip_Init();
 void Chip_Update();
 
-uint8_t Brd_UART_DataReady(void);
-uint8_t Brd_Find_Word(char* word);
-uint8_t Brd_UART_GetData(uint16_t head_subtracter);
+uint8_t Get_Application_State(void);
+uint8_t Skyla1_DataReady(void);
+uint8_t Skyla1_Find_Word(char* word);
+uint8_t Skyla1_GetData(uint16_t head_subtracter);
 void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t before_bool);
 
-void Pi_Check_Program_Flag(void);
+void Skyla1_Molly_App(void);
 void Skyla1_Check_Flag(void);
 void Creed1_Check_Flag(void);
 void Skyla2_Check_Flag(void);

@@ -15,19 +15,30 @@
 /* Private Functions ------------------------------------------------------------*/
 void SystemClock_Config(void);
 
+/* State Machines Variables ---------------------------------------------------*/
+#define DEFAULT					0
+#define FIND_DEBUG			1
+#define GET_SETTINGS 			2
+#define GET_MSG_P1				3
+#define GET_MSG_P2			4
+#define MOLLY_P1				5
+#define MOLLY_P2				6
+#define GET_MSG_P3			7
+#define FINISH_MOLLY			8
+
+uint8_t molly_skyla1_state = DEFAULT;
+uint8_t application_state = MONITOR;
 
 /* Raspberry Pi UART Variables -----------------------------------------------*/
 #define pi_buffer_size 5000
 uint8_t pi_uart_rxBuffer[pi_buffer_size] = {0};
 uint16_t pi_array_end = 0;
-uint8_t pi_program_request = 0;
 uint8_t pi_uart_rxData;
 
 #define getinfo_buffer_size 											300
 #define num_machine_readable_fields							37
 uint8_t getinfo_buffer[getinfo_buffer_size];
 char* pretty_getinfo_buffer[32];
-uint8_t getinfo_dlsect_count = 0;
 uint8_t getinfo_fields_found_count = 0;
 uint8_t getinfo_find_fields = 0;
 uint16_t getinfo_buffer_head = 0;
@@ -40,7 +51,7 @@ uint16_t skyla1_array_start = 0;
 uint16_t skyla1_array_end = 0;
 uint16_t skyla1_send_flag = 0;
 uint8_t skyla1_uart_rxData;
-uint8_t brd_uart_new_data = 0;
+uint8_t skyla1_new_data = 0;
 uint8_t * payload;
 
 /* CREED1 UART Variables ------------------------------------------------------*/
@@ -58,6 +69,7 @@ uint16_t skyla2_array_start = 0;
 uint16_t skyla2_array_end = 0;
 uint16_t skyla2_send_flag = 0;
 uint8_t skyla2_uart_rxData;
+uint8_t skyla2_new_data = 0;
 
 /* CREED2 UART Variables ------------------------------------------------------*/
 #define creed2_uart_buffer_size 5000
@@ -112,7 +124,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		pi_uart_rxBuffer[pi_array_end] = pi_uart_rxData;
 		if(pi_uart_rxData == 'p')
-			pi_program_request = 1;
+			application_state = MOLLY_SKYLA1;
 		pi_array_end = (pi_array_end+1)%pi_buffer_size;
 		HAL_UART_Receive_IT(&huart1, &pi_uart_rxData, 1);
 	}
@@ -121,7 +133,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		skyla1_uart_rxBuffer[skyla1_array_end] = skyla1_uart_rxData;
 		if(skyla1_uart_rxData == '\n' || skyla1_uart_rxData == '\r')
 			skyla1_send_flag = skyla1_array_end;
-		brd_uart_new_data = 1;
+		skyla1_new_data = 1;
 		skyla1_array_end = (skyla1_array_end+1)%skyla1_uart_buffer_size;
 		HAL_UART_Receive_IT(&huart3, &skyla1_uart_rxData, 1);
 	}
@@ -138,6 +150,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		skyla2_uart_rxBuffer[skyla2_array_end] = skyla2_uart_rxData;
 		if(skyla2_uart_rxData == '\n' || skyla2_uart_rxData == '\r')
 			skyla2_send_flag = skyla2_array_end;
+		skyla2_new_data = 1;
 		skyla2_array_end = (skyla2_array_end+1)%skyla2_uart_buffer_size;
 		HAL_UART_Receive_IT(&huart5, &skyla2_uart_rxData, 1);
 	}
@@ -151,25 +164,30 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 }
 
-uint8_t Brd_UART_DataReady(void)
+uint8_t Get_Application_State(void)
 {
-	return brd_uart_new_data;
+	return application_state;
 }
 
-uint8_t Brd_UART_GetData(uint16_t head_subtracter)
+uint8_t Skyla1_DataReady(void)
 {
-	brd_uart_new_data = 0;
+	return skyla1_new_data;
+}
+
+uint8_t Skyla1_GetData(uint16_t head_subtracter)
+{
+	skyla1_new_data = 0;
 	return skyla1_uart_rxBuffer[(skyla1_uart_buffer_size-1-head_subtracter+skyla1_array_end)%skyla1_uart_buffer_size];
 }
 
-uint8_t Brd_Find_Word(char* word)
+uint8_t Skyla1_Find_Word(char* word)
 {
-	if(Brd_UART_DataReady())
+	if(Skyla1_DataReady())
 	{
 		uint16_t word_length = strlen(word);
 		char current_word[255] = {0};
 		for(uint16_t i = 0; i<word_length; i++)
-			current_word[word_length-1-i] = Brd_UART_GetData(i);
+			current_word[word_length-1-i] = Skyla1_GetData(i);
 
 		if(strcmp(current_word, word) == 0)
 			return 1;
@@ -180,13 +198,13 @@ uint8_t Brd_Find_Word(char* word)
 		return 0;
 }
 
-uint8_t * Skyla_GetInfo(void)
+uint8_t * Skyla1_GetInfo(void)
 {
-	if(Brd_UART_DataReady())
+	if(Skyla1_DataReady())
 	{
 		if(getinfo_find_fields)
 		{
-			char curr_char = Brd_UART_GetData(0);
+			char curr_char = Skyla1_GetData(0);
 			getinfo_buffer[getinfo_buffer_head] = curr_char;
 			getinfo_buffer_head += 1;
 
@@ -198,7 +216,7 @@ uint8_t * Skyla_GetInfo(void)
 		}
 		else
 		{
-			if(Brd_Find_Word("1."))
+			if(Skyla1_Find_Word("1."))
 			{
 				getinfo_buffer[1] = '.';
 				getinfo_buffer_head = getinfo_buffer_head + 1;
@@ -247,115 +265,180 @@ void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t bef
 	}
 }
 
-void Pi_Check_Program_Flag(void)
+void Skyla1_Molly_App(void)
 {
-	if(pi_program_request == 1){
-		pi_program_request = 2;
-
-		HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
-
-		HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_SET);
-	}
-	else if(pi_program_request == 2 && Brd_Find_Word("DEBUG"))
+	while(1)
 	{
-		pi_program_request = 3;
-		HAL_UART_Transmit(&huart1, (uint8_t*)"L|Found debug\n", 14, 1000);
-		HAL_UART_Transmit(&huart3, (uint8_t*)"DEBUG", 5, 1000);
-	}
-	else if(pi_program_request == 3)
-	{
-		memset(pi_uart_rxBuffer, 0, pi_buffer_size);
-		pi_array_end = 0;
-		HAL_UART_Transmit(&huart1, (uint8_t*)"send payload \r\n", 15, 1000);
-		HAL_Delay(100);
-
-		HAL_UART_Transmit(&huart1, (uint8_t*)"L| PL:", 6, 1000);
-		HAL_UART_Transmit(&huart1, (uint8_t*)(char*)pi_uart_rxBuffer, strlen((char*)pi_uart_rxBuffer), 1000);
-		HAL_UART_Transmit(&huart1, (uint8_t*)"\n", 1, 1000);
-
-		payload = pi_uart_rxBuffer;
-
-		HAL_UART_Transmit(&huart3, (uint8_t*)"$", 1, 500);
-		pi_program_request = 4;
-	}
-	else if(pi_program_request == 4 && Brd_Find_Word("NACK"))
-	{
-		HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
-		pi_program_request = 5;
-	}
-	else if(pi_program_request == 5)
-	{
-		memset(getinfo_buffer, 0, getinfo_buffer_size);
-		getinfo_buffer_head = 1;
-		getinfo_dlsect_count = 0;
-		getinfo_fields_found_count = 0;
-		getinfo_find_fields = 0;
-		pi_program_request = 6;
-	}
-	else if(pi_program_request == 6)
-	{
-		brd_msg = Skyla_GetInfo();
-		if(brd_msg[0] == '1')
+		switch(molly_skyla1_state)
 		{
-			PrettySend_Skyla_Info_toPi(brd_msg, 1, 1);
-			pi_program_request = 7;
-		}
-	}
-	else if(pi_program_request == 7)
-	{
-		HAL_UART_Transmit(&huart3, (uint8_t*)"$", 1, 500);
-		HAL_UART_Transmit(&huart3, payload, strlen((char*)payload), 500);
-		pi_program_request = 8;
-	}
-	else if(pi_program_request == 8)
-	{
-		if(Brd_UART_DataReady())
-		{
-			char current_word[3] = {0};
-			for(uint16_t i = 0; i<3; i++)
-				current_word[2-i] = Brd_UART_GetData(i);
+			case FIND_DEBUG:
+				if(Skyla1_Find_Word("DEBUG"))
+				{
+					HAL_UART_Transmit(&huart1, (uint8_t*)"L|Found debug\n", 14, 1000);
+					HAL_UART_Transmit(&huart3, (uint8_t*)"DEBUG", 5, 1000);
+					molly_skyla1_state = GET_SETTINGS;
+				}
+				break;
 
-			if(strcmp(current_word, "ASS") == 0)
-			{
-				HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD PASS \n", 15, 500);
-				HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
-				pi_program_request = 9;
-			}
-			else if(strcmp(current_word, "AIL") == 0)
-			{
-				HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD FAIL \n", 15, 500);
-				pi_program_request = 11;
-			}
+			case GET_SETTINGS:
+				memset(pi_uart_rxBuffer, 0, pi_buffer_size);
+				pi_array_end = 0;
+				HAL_UART_Transmit(&huart1, (uint8_t*)"send payload \r\n", 15, 1000);
+				HAL_Delay(100);
+
+				HAL_UART_Transmit(&huart1, (uint8_t*)"L| PL:", 6, 1000);
+				HAL_UART_Transmit(&huart1, (uint8_t*)(char*)pi_uart_rxBuffer, strlen((char*)pi_uart_rxBuffer), 1000);
+				HAL_UART_Transmit(&huart1, (uint8_t*)"\n", 1, 1000);
+
+				payload = pi_uart_rxBuffer;
+
+				HAL_UART_Transmit(&huart3, (uint8_t*)"$", 1, 500);
+				molly_skyla1_state = GET_MSG_P1;
+				break;
+
+			case GET_MSG_P1:
+				if(Skyla1_Find_Word("NACK"))
+				{
+	//				HAL_UART_Transmit(&huart1, (uint8_t*)"L|Found nack1\n", 14, 1000);
+					memset(getinfo_buffer, 0, getinfo_buffer_size);
+					getinfo_buffer_head = 1;
+					getinfo_fields_found_count = 0;
+					getinfo_find_fields = 0;
+					HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
+					molly_skyla1_state = GET_MSG_P2;
+				}
+				break;
+
+			case GET_MSG_P2:
+				brd_msg = Skyla1_GetInfo();
+				if(brd_msg[0] == '1')
+				{
+//					HAL_UART_Transmit(&huart1, (uint8_t*)"L|", 2, 1000);
+//					HAL_UART_Transmit(&huart1, (uint8_t*)brd_msg, strlen((char*)brd_msg), 1000);
+//					HAL_UART_Transmit(&huart1, (uint8_t*)"\n", 1, 1000);
+					PrettySend_Skyla_Info_toPi(brd_msg, 1, 1);
+					molly_skyla1_state = MOLLY_P1;
+				}
+				break;
+
+			case MOLLY_P1:
+				if(Skyla1_Find_Word("N"))
+						skyla1_new_data = 0;
+				char strC[500];
+				char * settings_char = "$$";
+				strncpy(strC, settings_char, 1);
+				strC[1] = '\0';
+				strcat(strC, (char*)payload);
+				HAL_UART_Transmit(&huart3, (uint8_t*) strC, strlen(strC), 50);
+				molly_skyla1_state = MOLLY_P2;
+				break;
+
+			case MOLLY_P2:
+				HAL_UART_Transmit(&huart1, (uint8_t*)"L| in molly \n", 13, 500);
+				while(1)
+				{
+					if(Skyla1_Find_Word(":"))
+//					if(skyla1_send_flag != skyla1_array_start)
+					{
+						char * curr_string = (char*)&skyla1_uart_rxBuffer[skyla1_array_start+1];
+						char * find_pass = strstr(curr_string, "PASS");
+						char * find_fail = strstr(curr_string, "FAIL");
+						if(find_pass != NULL)
+						{
+							HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD PASS \n", 15, 500);
+							HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
+							memset(getinfo_buffer, 0, getinfo_buffer_size);
+							getinfo_buffer_head = 1;
+							getinfo_fields_found_count = 0;
+							getinfo_find_fields = 0;
+							molly_skyla1_state = GET_MSG_P3;
+							break;
+						}
+						else if(find_fail != NULL)
+						{
+							HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD FAIL!!! \n", 18, 500);
+							molly_skyla1_state = FINISH_MOLLY;
+							break;
+						}
+
+//						HAL_UART_Transmit(&huart1, (uint8_t*)"\nS1|", 4, 500);
+//						HAL_UART_Transmit(&huart1, &skyla1_uart_rxBuffer[skyla1_array_start+1], skyla1_send_flag - skyla1_array_start, 500);
+//						HAL_UART_Transmit(&huart1, &skyla1_uart_rxBuffer[skyla1_array_start+1], skyla1_array_end - skyla1_array_start, 500);
+
+
+		//				if(strcmp((char*)&skyla1_uart_rxBuffer[skyla1_array_start+1], "PASS") == 0)
+		//				{
+		//					HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD PASS \n", 15, 500);
+		//					HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
+		//					memset(getinfo_buffer, 0, getinfo_buffer_size);
+		//					getinfo_buffer_head = 1;
+		//					getinfo_fields_found_count = 0;
+		//					getinfo_find_fields = 0;
+		//					molly_skyla1_state = GET_MSG_P3;
+		//				}
+		//				else if(strcmp((char*)&skyla1_uart_rxBuffer[skyla1_array_start+1], "FAIL") == 0)
+		//				{
+		//					HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD FAIL \n", 15, 500);
+		//					molly_skyla1_state = FINISH_MOLLY;
+		//				}
+						skyla1_array_start = skyla1_array_end;
+					}
+				}
+
+	//			if(Skyla1_DataReady())
+	//			{
+	//				char current_word[2] = {0};
+	//				for(uint16_t i = 0; i<2; i++)
+	//					current_word[1-i] = Skyla1_GetData(i);
+	//
+	//				HAL_UART_Transmit(&huart1, (uint8_t*)"L|", 2, 500);
+	//				HAL_UART_Transmit(&huart1, (uint8_t*)current_word, 2, 500);
+	//				HAL_UART_Transmit(&huart1, (uint8_t*)"\n", 1, 500);
+	//
+	//				if(strcmp(current_word, "ASS") == 0)
+	//				{
+	//					HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD PASS \n", 15, 500);
+	//					HAL_UART_Transmit(&huart3, (uint8_t*)"#", 1, 500);
+	//					memset(getinfo_buffer, 0, getinfo_buffer_size);
+	//					getinfo_buffer_head = 1;
+	//					getinfo_fields_found_count = 0;
+	//					getinfo_find_fields = 0;
+	//					molly_skyla1_state = GET_MSG_P3;
+	//				}
+	//				else if(strcmp(current_word, "AIL") == 0)
+	//				{
+	//					HAL_UART_Transmit(&huart1, (uint8_t*)"L| BOARD FAIL \n", 15, 500);
+	//					molly_skyla1_state = FINISH_MOLLY;
+	//				}
+	//			}
+				break;
+
+			case GET_MSG_P3:
+				brd_msg = Skyla1_GetInfo();
+				if(brd_msg[0] == '1')
+				{
+					PrettySend_Skyla_Info_toPi(brd_msg, 1, 0);
+					molly_skyla1_state = FINISH_MOLLY;
+				}
+				break;
+
+			case FINISH_MOLLY:
+				HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_RESET);
+				HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
+				molly_skyla1_state = DEFAULT;
+				application_state = MONITOR;
+				break;
+
+			default:
+				HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
+				HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_SET);
+				molly_skyla1_state = FIND_DEBUG;
+				break;
 		}
-	}
-	else if(pi_program_request == 9)
-	{
-		memset(getinfo_buffer, 0, getinfo_buffer_size);
-		getinfo_buffer_head = 1;
-		getinfo_dlsect_count = 0;
-		getinfo_fields_found_count = 0;
-		getinfo_find_fields = 0;
-		pi_program_request = 10;
-	}
-	else if(pi_program_request == 10)
-	{
-		brd_msg = Skyla_GetInfo();
-		if(brd_msg[0] == '1')
-		{
-			PrettySend_Skyla_Info_toPi(brd_msg, 1, 0);
-			pi_program_request = 11;
-		}
-	}
-	else if(pi_program_request == 11)
-	{
-		HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_RESET);
-		HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
-		pi_program_request = 0;
 	}
 }
-
 
 void Skyla1_Check_Flag(void)
 {

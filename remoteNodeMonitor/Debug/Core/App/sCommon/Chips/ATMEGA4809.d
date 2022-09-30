@@ -4,9 +4,9 @@ Core/App/sCommon/Chips/ATMEGA4809.o: \
  ../Core/App/sCommon/Chips/../../Options.h \
  ../Core/App/sCommon/Chips/../../Debugger.h \
  ../Core/App/sCommon/Chips/../../sCommon/Hardware.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Options.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Debugger.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Hardware.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Options.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Debugger.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Hardware.h \
  ../Core/App/sCommon/Chips/../../sCommon/../Chip/NODE_MONITOR_NUCLEOF446RE.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
@@ -35,19 +35,19 @@ Core/App/sCommon/Chips/ATMEGA4809.o: \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/usart.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/main.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h \
- c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\datatypes.h \
- c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\hardware.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/main.h \
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h \
+ c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\datatypes.h \
+ c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\hardware.h \
  ../Core/Inc/gpio.h \
- C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/DataTypes.h
+ C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/DataTypes.h
 ../Core/App/sCommon/Chips/ATMEGA4809.h:
 ../Core/App/sCommon/Chips/../../Options.h:
 ../Core/App/sCommon/Chips/../../Debugger.h:
 ../Core/App/sCommon/Chips/../../sCommon/Hardware.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Options.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/Debugger.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Hardware.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Options.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Debugger.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Hardware.h:
 ../Core/App/sCommon/Chips/../../sCommon/../Chip/NODE_MONITOR_NUCLEOF446RE.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -76,9 +76,9 @@ C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Hardware.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Core/Inc/usart.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/main.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h:
-c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\datatypes.h:
-c:\users\jessica\ doe\documents\remotenodemonitor\core\app\scommon\hardware.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/main.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Chips/Chip.h:
+c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\datatypes.h:
+c:\users\jessica\ doe\documents\remote_node_monitor-c\remotenodemonitor\core\app\scommon\hardware.h:
 ../Core/Inc/gpio.h:
-C:/Users/Jessica\ Doe/Documents/remoteNodeMonitor/Core/App/sCommon/DataTypes.h:
+C:/Users/Jessica\ Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/DataTypes.h:
