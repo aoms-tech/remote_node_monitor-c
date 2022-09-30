@@ -35,8 +35,11 @@ void App_Update(void)
 			Skyla1_Molly_App();
 			break;
 
+		case MOLLY_SKYLA2:
+			Skyla2_Molly_App();
+			break;
+
 		case MONITOR:
-//			HAL_UART_Transmit(&huart1, (uint8_t*)"L|monitor mode \n", 16, 500);
 			Skyla1_Check_Flag();
 			Creed1_Check_Flag();
 			Skyla2_Check_Flag();

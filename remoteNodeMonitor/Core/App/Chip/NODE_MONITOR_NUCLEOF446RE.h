@@ -26,12 +26,18 @@ void Chip_Init();
 void Chip_Update();
 
 uint8_t Get_Application_State(void);
+
 uint8_t Skyla1_DataReady(void);
 uint8_t Skyla1_Find_Word(char* word);
 uint8_t Skyla1_GetData(uint16_t head_subtracter);
+uint8_t Skyla2_DataReady(void);
+uint8_t Skyla2_Find_Word(char* word);
+uint8_t Skyla2_GetData(uint16_t head_subtracter);
 void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t before_bool);
 
 void Skyla1_Molly_App(void);
+void Skyla2_Molly_App(void);
+
 void Skyla1_Check_Flag(void);
 void Creed1_Check_Flag(void);
 void Skyla2_Check_Flag(void);
