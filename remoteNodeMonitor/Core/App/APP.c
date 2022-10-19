@@ -16,8 +16,9 @@
 ******************************************************************************/
 void App_Init(void)
 {
-	HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(SKYLA1_TX_EN_Port, SKYLA1_TX_EN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(SKYLA2_TX_EN_Port, SKYLA2_TX_EN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(CHRG_EN_Port, CHRG_EN_Pin, GPIO_PIN_RESET);
 }
 
 

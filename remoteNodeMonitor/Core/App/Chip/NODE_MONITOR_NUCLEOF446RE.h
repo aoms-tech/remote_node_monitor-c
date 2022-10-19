@@ -43,10 +43,20 @@ void Creed1_Check_Flag(void);
 void Skyla2_Check_Flag(void);
 void Creed2_Check_Flag(void);
 
-#define UART_MUX_INH_Port					GPIOC
-#define UART_MUX_INH_Pin						GPIO_PIN_10
-#define UART_MUX_SELA_Port					GPIOC
-#define UART_MUX_SELA_Pin					GPIO_PIN_11
+//LOGGERS 2,3
+//#define SKYLA2_TX_EN_Port						GPIOC
+//#define SKYLA2_TX_EN_Pin						GPIO_PIN_10
+//#define SKYLA1_TX_EN_Port						GPIOC
+//#define SKYLA1_TX_EN_Pin						GPIO_PIN_11
+
+//LOGGER 1
+#define SKYLA2_TX_EN_Port						GPIOC
+#define SKYLA2_TX_EN_Pin						GPIO_PIN_11
+#define SKYLA1_TX_EN_Port						GPIOC
+#define SKYLA1_TX_EN_Pin						GPIO_PIN_10
+
+#define CHRG_EN_Port								GPIOC
+#define CHRG_EN_Pin								GPIO_PIN_1
 
 /* Chip default defines ------------------------------------------------------*/
 #define USART_TX_Pin 								GPIO_PIN_2		// A2

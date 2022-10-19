@@ -429,8 +429,7 @@ void Skyla1_Molly_App(void)
 			break;
 
 		case FINISH_MOLLY:
-			HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(SKYLA1_TX_EN_Port, SKYLA1_TX_EN_Pin, GPIO_PIN_RESET);
 			HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
 			molly_skyla1_state = DEFAULT;
 			application_state = MONITOR;
@@ -438,8 +437,7 @@ void Skyla1_Molly_App(void)
 
 		default:
 			HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
-			HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(SKYLA1_TX_EN_Port, SKYLA1_TX_EN_Pin, GPIO_PIN_SET);
 			molly_skyla1_state = FIND_DEBUG;
 			break;
 	}
@@ -548,8 +546,7 @@ void Skyla2_Molly_App(void)
 			break;
 
 		case FINISH_MOLLY:
-			HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(SKYLA2_TX_EN_Port, SKYLA2_TX_EN_Pin, GPIO_PIN_RESET);
 			HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
 			molly_skyla2_state = DEFAULT;
 			application_state = MONITOR;
@@ -557,8 +554,7 @@ void Skyla2_Molly_App(void)
 
 		default:
 			HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
-			HAL_GPIO_WritePin(UART_MUX_SELA_Port, UART_MUX_SELA_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(UART_MUX_INH_Port, UART_MUX_INH_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(SKYLA2_TX_EN_Port, SKYLA2_TX_EN_Pin, GPIO_PIN_SET);
 			molly_skyla2_state = FIND_DEBUG;
 			break;
 	}
