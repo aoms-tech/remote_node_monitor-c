@@ -449,8 +449,8 @@ void App_Init(void)
  80005f6:	f44f 6100 	mov.w	r1, #2048	; 0x800
  80005fa:	4805      	ldr	r0, [pc, #20]	; (8000610 <App_Init+0x2c>)
  80005fc:	f002 f9e8 	bl	80029d0 <HAL_GPIO_WritePin>
-	HAL_GPIO_WritePin(CHRG_EN_Port, CHRG_EN_Pin, GPIO_PIN_RESET);
- 8000600:	2200      	movs	r2, #0
+	HAL_GPIO_WritePin(CHRG_EN_Port, CHRG_EN_Pin, GPIO_PIN_SET);
+ 8000600:	2201      	movs	r2, #1
  8000602:	2102      	movs	r1, #2
  8000604:	4802      	ldr	r0, [pc, #8]	; (8000610 <App_Init+0x2c>)
  8000606:	f002 f9e3 	bl	80029d0 <HAL_GPIO_WritePin>
