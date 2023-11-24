@@ -6,5 +6,6 @@
         "stm32f4xx_hal.h": "c",
         "usart.h": "c",
         "gpio.h": "c"
-    }
+    },
+    "C_Cpp.default.compilerPath": "cl.exe"
 }

@@ -15,56 +15,36 @@
 ******************************************************************************/
 void App_Init(void)
 {
-    //Resets GPIO
-    HAL_GPIO_WritePin(NODE1_SEN_PWR ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_MUX_INH ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_UART_RX_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_LTCH_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_SEL_A ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_SEL_B ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE1_SEL_C ,GPIO_PIN_RESET);
+    //resets all nodes
+    HAL_GPIO_WritePin(DEV2_4_MUX_INH ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_LTCH_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_SEN_PWR ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_LTCH_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_SEN_PWR ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV4_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV4_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_UART_RX_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_CHG_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_VCC_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_SEL_C ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_SEL_B ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_SEL_A ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_SEL_B ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_SEL_C ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_MUX_INH ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV2_4_SEL_A ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV3_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV3_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_UART_RX_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_CHG_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DEV1_3_VCC_EN ,GPIO_PIN_RESET);
 
-    HAL_GPIO_WritePin(NODE2_SEN_PWR ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_MUX_INH ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_UART_RX_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_LTCH_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_SEL_A ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_SEL_B ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(NODE2_SEL_C ,GPIO_PIN_RESET);
-
-    HAL_GPIO_WritePin(SKYLA1_PWR_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA1_UPDI_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA1_CHG_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA1_VCC_EN ,GPIO_PIN_RESET);
-
-    HAL_GPIO_WritePin(SKYLA2_PWR_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA2_UPDI_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA2_CHG_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(SKYLA2_VCC_EN ,GPIO_PIN_RESET);
-
-    HAL_GPIO_WritePin(NOTECARD1_PWR_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(CREED1_UPDI_EN ,GPIO_PIN_RESET);
-
-    HAL_GPIO_WritePin(NOTECARD2_PWR_EN ,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(CREED2_UPDI_EN ,GPIO_PIN_RESET);
-
-
-
-    //
-    HAL_GPIO_WritePin(NODE1_SEN_PWR ,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(NODE1_LTCH_EN ,GPIO_PIN_SET);
-
-    HAL_GPIO_WritePin(NODE2_SEN_PWR ,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(NODE2_LTCH_EN ,GPIO_PIN_SET);
-
-    HAL_GPIO_WritePin(SKYLA1_PWR_EN ,GPIO_PIN_SET);
-    if():
-        HAL_GPIO_WritePin(SKYLA1_CHG_EN ,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(SKYLA2_PWR_EN ,GPIO_PIN_SET);
-    if():
-        HAL_GPIO_WritePin(SKYLA2_CHG_EN ,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(NOTECARD1_PWR_EN ,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(NOTECARD2_PWR_EN ,GPIO_PIN_SET);
+    Power_Dev_ON();
+    Sensor_Select_App();
 }
 
 
@@ -78,36 +58,36 @@ void App_Update(void)
 {
 	switch(Get_Application_State())
 	{
-		case MOLLY_SKYLA1:
+		case MOLLY_DEV1:
 			Skyla1_Molly_App();
 			break;
 
-		case MOLLY_SKYLA2:
+		case MOLLY_DEV2:
 			Skyla2_Molly_App();
 			break;
 
-        case PROGRAM_SKYLA1:
+        case PROGRAM_DEV1:
             Skyla1_Program_App();
 			break;
 
-        case PROGRAM_SKYLA2:
+        case PROGRAM_DEV2:
             Skyla2_Program_App();
 			break;
 
-        case PROGRAM_CREED1:
+        case PROGRAM_DEV3:
             Creed1_Program_App();
             break;
 
-        case PROGRAM_CREED2:
+        case PROGRAM_DEV4:
             Creed2_Program_App();
             break;
 
         case SEN_SELECT:
-            Sensor_Selector();
+            Sensor_Select_App();
             break;
 
         case SET_CHG_STATE:
-                
+            Set_Charger_App();
             break;
 
 		case MONITOR:

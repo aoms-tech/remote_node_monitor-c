@@ -75,7 +75,11 @@ void Skyla2_Program_App(void);
 void Creed1_Program_App(void);
 void Creed2_Program_App(void);
 
-void Sensor_Selector(void);
+void Power_Dev_OFF(uint8_t node);
+void Power_Dev_ON(uint8_t node);
+
+void Sensor_Select_App(void);
+void Set_Charger_App(void);
 
 void Skyla1_Check_Flag(void);
 void Creed1_Check_Flag(void);
