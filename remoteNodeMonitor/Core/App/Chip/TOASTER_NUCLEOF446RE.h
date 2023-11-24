@@ -12,12 +12,44 @@
 #include <stdlib.h>
 #include <string.h>
 #include "DataTypes.h"
+#include <string>
+
 
 
 /* Program States -----------------------------------------------------------*/
-#define MONITOR									0
-#define MOLLY_SKYLA1							1
-#define MOLLY_SKYLA2						2
+#define MONITOR								0
+#define VALIDATE                            1
+#define MOLLY_DEV1						    2
+#define MOLLY_DEV2						    3
+#define PROGRAM_DEV1						4
+#define PROGRAM_DEV2						5
+#define PROGRAM_DEV3						6
+#define PROGRAM_DEV4						7
+#define SEN_SELECT                          8
+#define SET_CHG_STATE                       9   
+
+/* Sensors Select ------------------------------------------------------------*/
+#define SENS_SEL_A_STATE(x) ((x & ((1 << 1)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+#define SENS_SEL_B_STATE(x) ((x & ((1 << 2)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+#define SENS_SEL_C_STATE(x) ((x & ((1 << 3)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+
+#define SENS_TMP                            0
+#define SENS_3TMP                           1
+#define SENS_DS                             2
+#define SENS_SHT                            3
+
+#define NUM_SENS_AVAILABLE                  4
+string sensorName[NUM_SENS_AVAILABLE] = {
+    "TMP107",
+    "3x TMP107",
+    "DS18B20",
+    "SHT30"
+}
+
+/* Node Select ---------------------------------------------------------------*/
+#define BOTH                                0
+#define NODE1                               1
+#define NODE2                               2
 
 
 /* Setup Functions -----------------------------------------------------------*/
@@ -38,6 +70,13 @@ void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t bef
 void Skyla1_Molly_App(void);
 void Skyla2_Molly_App(void);
 
+void Skyla1_Program_App(void);
+void Skyla2_Program_App(void);
+void Creed1_Program_App(void);
+void Creed2_Program_App(void);
+
+void Sensor_Selector(void);
+
 void Skyla1_Check_Flag(void);
 void Creed1_Check_Flag(void);
 void Skyla2_Check_Flag(void);
@@ -55,18 +94,17 @@ void Creed2_Check_Flag(void);
 #define SKYLA1_TX_EN_Port						GPIOC
 #define SKYLA1_TX_EN_Pin						GPIO_PIN_10
 
-#define CHRG_EN_Port								GPIOC
+#define CHRG_EN_Port							GPIOC
 #define CHRG_EN_Pin								GPIO_PIN_1
 
 /* Chip default defines ------------------------------------------------------*/
-#define USART_TX_Pin 								GPIO_PIN_2		// A2
-#define USART_TX_GPIO_Port 					GPIOA				// A2
-#define USART_RX_Pin 								GPIO_PIN_3		// A3
-#define USART_RX_GPIO_Port 					GPIOA				// A3
-#define TMS_Pin 										GPIO_PIN_13		// A13
-#define TMS_GPIO_Port 							GPIOA				// A13
-#define TCK_Pin 										GPIO_PIN_14		// A14
-#define TCK_GPIO_Port 							GPIOA				// A14
-#define SWO_Pin 										GPIO_PIN_3		// B3
-#define SWO_GPIO_Port 							GPIOB				// B3
-
+#define USART_TX_Pin 							GPIO_PIN_2		// A2
+#define USART_TX_GPIO_Port 					    GPIOA			// A2
+#define USART_RX_Pin 							GPIO_PIN_3		// A3
+#define USART_RX_GPIO_Port 					    GPIOA			// A3
+#define TMS_Pin 								GPIO_PIN_13		// A13
+#define TMS_GPIO_Port 							GPIOA			// A13
+#define TCK_Pin 								GPIO_PIN_14		// A14
+#define TCK_GPIO_Port 							GPIOA			// A14
+#define SWO_Pin 								GPIO_PIN_3		// B3
+#define SWO_GPIO_Port 							GPIOB			// B3

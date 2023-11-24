@@ -1,0 +1,4 @@
+[submodule "remote_node_monitor-c"]
+	path = remote_node_monitor-c
+	url = https://github.com/aoms-tech/remote_node_monitor-c.git
+	branch = master

@@ -5,20 +5,66 @@
 * Description: Application Main Program
 ***************************************************************************************************/
 #include "APP.h"
-#include <string.h>
-
+#include "main.h"
 
 /******************************************************************************
 * Function:    	void App_Init(void)
-* Description: 	Initializes application.
+* Description: 	Initializes application and resets all GPIO pins
 * Parameters:  	(none)
 * Returns:     		(none)
 ******************************************************************************/
 void App_Init(void)
 {
-	HAL_GPIO_WritePin(SKYLA1_TX_EN_Port, SKYLA1_TX_EN_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(SKYLA2_TX_EN_Port, SKYLA2_TX_EN_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(CHRG_EN_Port, CHRG_EN_Pin, GPIO_PIN_RESET);
+    //Resets GPIO
+    HAL_GPIO_WritePin(NODE1_SEN_PWR ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_MUX_INH ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_UART_RX_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_LTCH_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_SEL_A ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_SEL_B ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE1_SEL_C ,GPIO_PIN_RESET);
+
+    HAL_GPIO_WritePin(NODE2_SEN_PWR ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_MUX_INH ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_UART_RX_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_LTCH_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_SEL_A ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_SEL_B ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(NODE2_SEL_C ,GPIO_PIN_RESET);
+
+    HAL_GPIO_WritePin(SKYLA1_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA1_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA1_CHG_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA1_VCC_EN ,GPIO_PIN_RESET);
+
+    HAL_GPIO_WritePin(SKYLA2_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA2_UPDI_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA2_CHG_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SKYLA2_VCC_EN ,GPIO_PIN_RESET);
+
+    HAL_GPIO_WritePin(NOTECARD1_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(CREED1_UPDI_EN ,GPIO_PIN_RESET);
+
+    HAL_GPIO_WritePin(NOTECARD2_PWR_EN ,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(CREED2_UPDI_EN ,GPIO_PIN_RESET);
+
+
+
+    //
+    HAL_GPIO_WritePin(NODE1_SEN_PWR ,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(NODE1_LTCH_EN ,GPIO_PIN_SET);
+
+    HAL_GPIO_WritePin(NODE2_SEN_PWR ,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(NODE2_LTCH_EN ,GPIO_PIN_SET);
+
+    HAL_GPIO_WritePin(SKYLA1_PWR_EN ,GPIO_PIN_SET);
+    if():
+        HAL_GPIO_WritePin(SKYLA1_CHG_EN ,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(SKYLA2_PWR_EN ,GPIO_PIN_SET);
+    if():
+        HAL_GPIO_WritePin(SKYLA2_CHG_EN ,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(NOTECARD1_PWR_EN ,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(NOTECARD2_PWR_EN ,GPIO_PIN_SET);
 }
 
 
@@ -39,6 +85,30 @@ void App_Update(void)
 		case MOLLY_SKYLA2:
 			Skyla2_Molly_App();
 			break;
+
+        case PROGRAM_SKYLA1:
+            Skyla1_Program_App();
+			break;
+
+        case PROGRAM_SKYLA2:
+            Skyla2_Program_App();
+			break;
+
+        case PROGRAM_CREED1:
+            Creed1_Program_App();
+            break;
+
+        case PROGRAM_CREED2:
+            Creed2_Program_App();
+            break;
+
+        case SEN_SELECT:
+            Sensor_Selector();
+            break;
+
+        case SET_CHG_STATE:
+                
+            break;
 
 		case MONITOR:
 			Skyla1_Check_Flag();

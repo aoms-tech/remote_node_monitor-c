@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "app.h": "c",
+        "toaster_nucleof446re.h": "c",
+        "main.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "usart.h": "c",
+        "gpio.h": "c"
+    }
+}
