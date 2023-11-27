@@ -5,7 +5,11 @@
         "main.h": "c",
         "stm32f4xx_hal.h": "c",
         "usart.h": "c",
-        "gpio.h": "c"
+        "gpio.h": "c",
+        "iosfwd": "c",
+        "vector": "c",
+        "xstring": "c",
+        "xutility": "c"
     },
     "C_Cpp.default.compilerPath": "cl.exe"
 }

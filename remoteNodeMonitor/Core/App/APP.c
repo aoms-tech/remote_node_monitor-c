@@ -90,6 +90,10 @@ void App_Update(void)
             Set_Charger_App();
             break;
 
+        case SET_DEV_PWR:
+            Set_Device_Power_App();
+            break;
+
 		case MONITOR:
 			Skyla1_Check_Flag();
 			Creed1_Check_Flag();
