@@ -66,6 +66,7 @@ uint8_t * brd_msg;
 #define SETMODE_PROGRAM_DEV4				'h'
 #define SETMODE_SENS_SELECT					'i'
 #define SETMODE_SET_CHG_STATE				'j'
+#define SETMODE_SET_DEV_PWR					'k'
 
 #define PI_PROCESS_FIN 						'`'
 
@@ -172,6 +173,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				break;
 			case SETMODE_SET_CHG_STATE:
 				application_state = SET_CHG_STATE;
+				break;
+			case SETMODE_SET_DEV_PWR:
+				application_state = SET_DEV_PWR;
 				break;
 		}
 		pi_array_end = (pi_array_end+1)%pi_buffer_size;
@@ -635,11 +639,6 @@ void Dev1_Program_App(void)
 	switch(program_dev1_state)
 	{
 		case FINISH_PROGRAM:
-			Power_Cycle_Dev(NODE1);
-			while(!(Dev_Restarted(dev1_send_flag, dev1_array_start)))
-			{
-			}
-
 			//reset relays 
 			HAL_GPIO_WritePin(DEV1_3_VCC_EN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV1_UPDI_EN, GPIO_PIN_RESET);
@@ -669,11 +668,6 @@ void Dev2_Program_App(void)
 	switch(program_dev2_state)
 	{
 		case FINISH_PROGRAM:
-			Power_Cycle_Dev(NODE2);
-			while(!(Dev_Restarted(dev2_send_flag, dev2_array_start)))
-			{
-			}
-
 			//reset relays 
 			HAL_GPIO_WritePin(DEV2_4_VCC_EN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV2_UPDI_EN, GPIO_PIN_RESET);
@@ -703,11 +697,6 @@ void Dev3_Program_App(void)
 	switch(program_dev3_state)
 	{
 		case FINISH_PROGRAM:
-			Power_Cycle_Dev(NODE1);
-			while(!(Dev_Restarted(dev3_send_flag, dev3_array_start)))
-			{
-			}
-
 			//reset relays 
 			HAL_GPIO_WritePin(DEV1_3_VCC_EN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV3_UPDI_EN, GPIO_PIN_RESET);
@@ -737,11 +726,6 @@ void Dev4_Program_App(void)
 	switch(program_dev4_state)
 	{
 		case FINISH_PROGRAM:
-			Power_Cycle_Dev(NODE2);
-			while(!(Dev_Restarted(dev4_send_flag, dev4_array_start)))
-			{
-			}
-
 			//reset relays 
 			HAL_GPIO_WritePin(DEV2_4_VCC_EN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV4_UPDI_EN, GPIO_PIN_RESET);
@@ -794,6 +778,35 @@ void Power_Cycle_Dev(uint8_t dev = BOTH)
 	Power_Dev_ON(dev);
 }
 
+void Set_Device_Power_App(void)
+{
+	vector<char> data = Get_Pi_UART_Data_Last(2);
+	uint8_t dev = (uint8_t) data[0];
+	uint8_t state = (uint8_t) data[1];
+
+	switch(state)
+	{
+		case ON:
+			Power_Dev_ON(dev);
+			break;
+	
+		case OFF:
+			Power_Dev_OFF(dev);
+			break;
+
+		case CYCLE:
+			Power_Cycle_Dev(dev);
+			break;
+
+		default:
+			printf("Invalid state selected\n")
+			break;
+	}
+
+	HAL_UART_Transmit(&huart1, "Power State Set \n", 17, 500)
+	application_state = DEFAULT;
+}
+
 void Power_Dev_OFF(uint8_t dev = BOTH)
 {
 	switch(dev)
@@ -838,6 +851,9 @@ void Power_Dev_ON(uint8_t dev = BOTH)
 			HAL_GPIO_WritePin(DEV1_3_LTCH_EN ,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DEV1_PWR_EN, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DEV3_PWR_EN, GPIO_PIN_SET);
+			bool dev1_on = false;
+			dev1_on = Dev_Restarted(dev1_send_flag, dev1_array_start);
+			(dev1_on) ? HAL_UART_Transmit(&huart1, "Dev1 ON\n", 8, 500) : continue;
 
 			break;
 		case NODE2:
@@ -846,6 +862,10 @@ void Power_Dev_ON(uint8_t dev = BOTH)
 			HAL_GPIO_WritePin(DEV2_4_LTCH_EN ,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DEV2_PWR_EN, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DEV4_PWR_EN, GPIO_PIN_SET);
+			bool dev2_on = false;
+			dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start);
+			(dev2_on) ? HAL_UART_Transmit(&huart2, "Dev2 ON\n", 8, 500) : continue;
+
 			break;
 		default:
 			printf("Invalid node selected\n");
@@ -877,10 +897,12 @@ vector<char> Get_Pi_UART_Data_Last(uint16_t num_data = 1)
 void Sensor_Select_App(void)
 {
 	vector<char> data = Get_Pi_UART_Data_Last(2);
-	char node = data[0];
-	char sens_num = data[1];
+	char node = (uint8_t) data[0];
+	char sens_num = (uint8_t) data[1];
 
-	Sensor_Selector(node, sens_num);
+	Set_Sensor(node, sens_num);
+
+	application_state = DEFAULT;
 }
 
 void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
@@ -894,10 +916,13 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 	switch(node)
 	{
 		case BOTH:
-			Sensor_Selector(NODE1, selected_sensor);
-			Sensor_Selector(NODE2, selected_sensor);
+			Set_Sensor(NODE1, selected_sensor);
+			Set_Sensor(NODE2, selected_sensor);
 			break;
 		case NODE1:
+			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_RESET)
+			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_RESET)
+
 			Power_Dev_OFF(NODE1);
 
 			HAL_GPIO_WritePin(DEV1_3_SEL_A, SENS_SEL_A_STATE(selected_sensor));
@@ -906,11 +931,12 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 
 			printf("Node 1 " + sensorName[selected_sensor] + " sensor selected\n")
 
-			Power_Dev_ON(NODE1);
-
+			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_SET)
+			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_SET)
 			break;
 		case NODE2:
-			Power_Dev_OFF(NODE2);
+			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_RESET)
+			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_RESET)
 
 			HAL_GPIO_WritePin(DEV2_4_SEL_A, SENS_SEL_A_STATE(selected_sensor));
 			HAL_GPIO_WritePin(DEV2_4_SEL_B, SENS_SEL_B_STATE(selected_sensor));
@@ -918,8 +944,8 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 
 			printf("Node 2 " + sensorName[selected_sensor] + " sensor selected\n")
 
-			Power_Dev_ON(NODE2);
-			
+			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_SET)
+			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_SET)
 			break;
 		default:
 			printf("Invalid Node Selected\n");
@@ -930,10 +956,12 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 void Set_Charger_App(void)
 {
 	vector<char> data = Get_Pi_UART_Data_Last(2);
-	char node = data[0];
-	char chg_state = data[1];
+	char node = (uint8_t) data[0];
+	char chg_state = (uint8_t) data[1];
 
 	Set_Charger_State(node, chg_state);
+
+	application_state = DEFAULT;
 }
 
 void Set_Charger_State(int node = BOTH, bool charger_state = true)

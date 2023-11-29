@@ -26,7 +26,8 @@
 #define PROGRAM_DEV3						6
 #define PROGRAM_DEV4						7
 #define SEN_SELECT                          8
-#define SET_CHG_STATE                       9   
+#define SET_CHG_STATE                       9 
+#define SET_DEV_PWR                         10
 
 /* Sensors Select ------------------------------------------------------------*/
 #define SENS_SEL_A_STATE(x) ((x & ((1 << 1)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
@@ -51,6 +52,9 @@ string sensorName[NUM_SENS_AVAILABLE] = {
 #define NODE1                               1
 #define NODE2                               2
 
+#define OFF                                 0
+#define ON                                  1
+#define CYCLE                               2
 
 /* Setup Functions -----------------------------------------------------------*/
 void Error_Handler(void);
@@ -75,6 +79,7 @@ void Skyla2_Program_App(void);
 void Creed1_Program_App(void);
 void Creed2_Program_App(void);
 
+void Set_Device_Power_App(void)
 void Power_Dev_OFF(uint8_t node);
 void Power_Dev_ON(uint8_t node);
 
