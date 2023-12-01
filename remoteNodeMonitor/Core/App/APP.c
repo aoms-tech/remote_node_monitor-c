@@ -55,7 +55,7 @@ void App_Init(void)
     HAL_GPIO_WritePin(DEV1_CHG_EN ,GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DEV1_3_VCC_EN ,GPIO_PIN_RESET);
 
-    Power_Dev_ON();
+    Power_Dev_ON(BOTH);
     Sensor_Select_App();
 }
 
@@ -71,27 +71,27 @@ void App_Update(void)
 	switch(Get_Application_State())
 	{
 		case MOLLY_DEV1:
-			Skyla1_Molly_App();
+			Dev1_Molly_App();
 			break;
 
 		case MOLLY_DEV2:
-			Skyla2_Molly_App();
+			Dev2_Molly_App();
 			break;
 
         case PROGRAM_DEV1:
-            Skyla1_Program_App();
+        	Dev1_Program_App();
 			break;
 
         case PROGRAM_DEV2:
-            Skyla2_Program_App();
+        	Dev2_Program_App();
 			break;
 
         case PROGRAM_DEV3:
-            Creed1_Program_App();
+        	Dev3_Program_App();
             break;
 
         case PROGRAM_DEV4:
-            Creed2_Program_App();
+        	Dev4_Program_App();
             break;
 
         case SEN_SELECT:
@@ -107,10 +107,10 @@ void App_Update(void)
             break;
 
 		case MONITOR:
-			Skyla1_Check_Flag();
-			Creed1_Check_Flag();
-			Skyla2_Check_Flag();
-			Creed2_Check_Flag();
+			Dev1_Check_Flag();
+			Dev3_Check_Flag();
+			Dev2_Check_Flag();
+			Dev4_Check_Flag();
 			break;
 	}
 }

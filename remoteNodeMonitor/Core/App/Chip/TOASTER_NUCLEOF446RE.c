@@ -10,10 +10,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "main.h"
-#include <vector>
-#include <string>
-
-//test change
+#include <stdbool.h>
 
 /* Private Functions ------------------------------------------------------------*/
 void SystemClock_Config(void);
@@ -104,8 +101,6 @@ uint16_t dev4_array_start = 0;
 uint16_t dev4_array_end = 0;
 uint16_t dev4_send_flag = 0;
 uint8_t dev4_uart_rxData;
-
-using namespace std;
 
 /******************************************************************************
 * Function:    	void Chip_Init(void)
@@ -377,7 +372,7 @@ void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t bef
 	}
 }
 
-void Power_Cycle_Dev(uint8_t dev = BOTH)
+void Power_Cycle_Dev(uint8_t dev)
 {
 	printf("Power cycling devices\n");
 	Power_Dev_OFF(dev);
@@ -390,14 +385,14 @@ void Power_Cycle_Dev(uint8_t dev = BOTH)
 	Power_Dev_ON(dev);
 }
 
-bool Dev_Restarted(uint16_t dev_send_flag, uint16_t dev_array_start, uint8_t timeout = 30)
+bool Dev_Restarted(uint16_t dev_send_flag, uint16_t dev_array_start, uint8_t timeout)
 {
 	uint32_t time_start = HAL_GetTick();
 
 	while (dev_send_flag == dev_array_start)
 	{
 		uint32_t time_elapsed = (time_start - HAL_GetTick());
-		printf("Waiting for device to startup. Time elapsed: %d\n", time_elapsed);
+		printf("Waiting for device to startup. Time elapsed: %ld\n", time_elapsed);
 
 		if (time_elapsed >= (timeout * 1000))
 		{
@@ -521,7 +516,7 @@ void Dev1_Molly_App(void)
 			HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
 
 			Power_Cycle_Dev(NODE1);
-			while(!(Dev_Restarted(dev1_send_flag, dev1_array_start)))
+			while(!(Dev_Restarted(dev1_send_flag, dev1_array_start, 30)))
 			{
 			}
 
@@ -653,7 +648,7 @@ void Dev2_Molly_App(void)
 				HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_RESET);
 				HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
 				Power_Cycle_Dev(NODE2);
-				while(!(Dev_Restarted(dev2_send_flag, dev2_array_start)))
+				while(!(Dev_Restarted(dev2_send_flag, dev2_array_start, 30)))
 				{
 				}
 
@@ -673,25 +668,19 @@ void Dev2_Molly_App(void)
 }
 
 
-
-/******************************************************************************
-* Function:    	vector<char> Get_Pi_UART_Data_Last(int num_data = 1)
-* Description: 	Returns the last number of data characters from the Pi
-* Parameters:  	Number of data char requested
-* Returns:     	vector<char> array of last num_data data char from Pi. Returned
-*				in received order
-******************************************************************************/
-
-vector<char> Get_Pi_UART_Data_Last(uint16_t num_data = 1)
+char Get_Pi_UART_Data_Last(uint16_t num_data)
 {
-	vector<char> pi_selected_data = {};
+	char pi_selected_data = ' ';
 
-	for(int i = 0; i < num_data; i++)
+	uint16_t arr_data_index = pi_array_end;
+	if(pi_array_end < num_data)
 	{
-		uint16_t arr_data_index = pi_array_end;
-		(pi_array_end < i) ? arr_data_index = pi_buffer_size - (i - pi_array_end) : arr_data_index -= i;
-		pi_selected_data[i] = pi_uart_rxBuffer[arr_data_index];
+		arr_data_index = pi_buffer_size - (num_data - pi_array_end);
+	} else {
+		arr_data_index -= num_data;
 	}
+
+	pi_selected_data = pi_uart_rxBuffer[arr_data_index];
 
 	return pi_selected_data;
 }
@@ -830,9 +819,8 @@ void Dev4_Program_App(void)
 
 void Set_Device_Power_App(void)
 {
-	vector<char> data = Get_Pi_UART_Data_Last(2);
-	uint8_t dev = (uint8_t) data[0];
-	uint8_t state = (uint8_t) data[1];
+	uint8_t dev = (uint8_t) Get_Pi_UART_Data_Last(1);
+	uint8_t state = (uint8_t) Get_Pi_UART_Data_Last(2);
 
 	switch(state)
 	{
@@ -903,7 +891,7 @@ void Power_Dev_ON(uint8_t dev)
 				HAL_GPIO_WritePin(DEV1_PWR_EN, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(DEV3_PWR_EN, GPIO_PIN_SET);
 				bool dev1_on = false;
-				dev1_on = Dev_Restarted(dev1_send_flag, dev1_array_start);
+				dev1_on = Dev_Restarted(dev1_send_flag, dev1_array_start, 30);
 				if(dev1_on)
 				{
 					HAL_UART_Transmit(&huart1, (uint8_t*)"Dev1 ON\n", 8, 500);
@@ -919,7 +907,7 @@ void Power_Dev_ON(uint8_t dev)
 				HAL_GPIO_WritePin(DEV2_PWR_EN, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(DEV4_PWR_EN, GPIO_PIN_SET);
 				bool dev2_on = false;
-				dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start);
+				dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start, 30);
 				if(dev2_on)
 				{
 					HAL_UART_Transmit(&huart2, (uint8_t*)"Dev2 ON\n", 8, 500);
@@ -936,7 +924,7 @@ void Power_Dev_ON(uint8_t dev)
 }
 
 
-void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
+void Set_Sensor(uint8_t node, uint8_t selected_sensor)
 {
 	if (selected_sensor > (NUM_SENS_AVAILABLE-1))
 	{
@@ -944,11 +932,11 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 		return;
 	}
 
-	string sensorName[NUM_SENS_AVAILABLE] = {
-	    "TMP107",
-	    "3x TMP107",
-	    "DS18B20",
-	    "SHT30"
+	char sensorName[NUM_SENS_AVAILABLE][10] = {
+		    "TMP107",
+		    "3x TMP107",
+		    "DS18B20",
+		    "SHT30"
 	};
 
 	switch(node)
@@ -993,16 +981,15 @@ void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
 
 void Sensor_Select_App(void)
 {
-	vector<char> data = Get_Pi_UART_Data_Last(2);
-	char node = (uint8_t) data[0];
-	char sens_num = (uint8_t) data[1];
+	char node = (uint8_t) Get_Pi_UART_Data_Last(1);
+	char sens_num = (uint8_t) Get_Pi_UART_Data_Last(2);
 
 	Set_Sensor(node, sens_num);
 
 	application_state = DEFAULT;
 }
 
-void Set_Charger_State(int node = BOTH, bool charger_state = true)
+void Set_Charger_State(int node, bool charger_state)
 {
 	switch(node)
 	{
@@ -1021,9 +1008,8 @@ void Set_Charger_State(int node = BOTH, bool charger_state = true)
 
 void Set_Charger_App(void)
 {
-	vector<char> data = Get_Pi_UART_Data_Last(2);
-	char node = (uint8_t) data[0];
-	char chg_state = (uint8_t) data[1];
+	char node = (uint8_t) Get_Pi_UART_Data_Last(1);
+	char chg_state = (uint8_t) Get_Pi_UART_Data_Last(2);
 
 	Set_Charger_State(node, chg_state);
 

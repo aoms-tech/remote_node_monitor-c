@@ -1,5 +1,5 @@
 Core/App/Chip/TOASTER_NUCLEOF446RE.o: \
- ../Core/App/Chip/TOASTER_NUCLEOF446RE.cpp \
+ ../Core/App/Chip/TOASTER_NUCLEOF446RE.c \
  ../Core/App/Chip/TOASTER_NUCLEOF446RE.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \

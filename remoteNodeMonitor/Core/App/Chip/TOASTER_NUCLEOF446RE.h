@@ -51,50 +51,50 @@
 
 /* Setup Functions -----------------------------------------------------------*/
 void Error_Handler(void);
-void Chip_Init();
-void Chip_Update();
+void Chip_Init(void);
+void Chip_Update(void);
 
 uint8_t Get_Application_State(void);
 
-uint8_t Skyla1_DataReady(void);
-uint8_t Skyla1_Find_Word(char* word);
-uint8_t Skyla1_GetData(uint16_t head_subtracter);
-uint8_t Skyla2_DataReady(void);
-uint8_t Skyla2_Find_Word(char* word);
-uint8_t Skyla2_GetData(uint16_t head_subtracter);
+uint8_t Dev1_DataReady(void);
+uint8_t Dev1_Find_Word(char* word);
+uint8_t Dev1_GetData(uint16_t head_subtracter);
+uint8_t Dev2_DataReady(void);
+uint8_t Dev2_Find_Word(char* word);
+uint8_t Dev2_GetData(uint16_t head_subtracter);
 void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t before_bool);
 
-void Skyla1_Molly_App(void);
-void Skyla2_Molly_App(void);
+void Dev1_Molly_App(void);
+void Dev2_Molly_App(void);
 
-void Skyla1_Program_App(void);
-void Skyla2_Program_App(void);
-void Creed1_Program_App(void);
-void Creed2_Program_App(void);
+void Dev1_Program_App(void);
+void Dev2_Program_App(void);
+void Dev3_Program_App(void);
+void Dev4_Program_App(void);
 
 void Set_Device_Power_App(void);
-void Power_Dev_OFF(uint8_t = BOTH);
-void Power_Dev_ON(uint8_t = BOTH);
+void Power_Dev_OFF(uint8_t node);
+void Power_Dev_ON(uint8_t node);
 
 void Sensor_Select_App(void);
 void Set_Charger_App(void);
 
-void Skyla1_Check_Flag(void);
-void Creed1_Check_Flag(void);
-void Skyla2_Check_Flag(void);
-void Creed2_Check_Flag(void);
+void Dev1_Check_Flag(void);
+void Dev3_Check_Flag(void);
+void Dev2_Check_Flag(void);
+void Dev4_Check_Flag(void);
 
 //LOGGERS 2,3
-//#define SKYLA2_TX_EN_Port						GPIOC
-//#define SKYLA2_TX_EN_Pin						GPIO_PIN_10
-//#define SKYLA1_TX_EN_Port						GPIOC
-//#define SKYLA1_TX_EN_Pin						GPIO_PIN_11
+//#define Dev2_TX_EN_Port						GPIOC
+//#define Dev2_TX_EN_Pin						GPIO_PIN_10
+//#define Dev1_TX_EN_Port						GPIOC
+//#define Dev1_TX_EN_Pin						GPIO_PIN_11
 
 //LOGGER 1
-#define SKYLA2_TX_EN_Port						GPIOC
-#define SKYLA2_TX_EN_Pin						GPIO_PIN_11
-#define SKYLA1_TX_EN_Port						GPIOC
-#define SKYLA1_TX_EN_Pin						GPIO_PIN_10
+#define Dev2_TX_EN_Port						GPIOC
+#define Dev2_TX_EN_Pin						GPIO_PIN_11
+#define Dev1_TX_EN_Port						GPIOC
+#define Dev1_TX_EN_Pin						GPIO_PIN_10
 
 #define CHRG_EN_Port							GPIOC
 #define CHRG_EN_Pin								GPIO_PIN_1

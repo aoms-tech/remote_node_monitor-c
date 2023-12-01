@@ -8,13 +8,13 @@ C_SRCS += \
 ../Core/App/APP.c \
 ../Core/App/main.c 
 
-C_DEPS += \
-./Core/App/APP.d \
-./Core/App/main.d 
-
 OBJS += \
 ./Core/App/APP.o \
 ./Core/App/main.o 
+
+C_DEPS += \
+./Core/App/APP.d \
+./Core/App/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
