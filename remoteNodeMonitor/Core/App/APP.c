@@ -68,6 +68,7 @@ void App_Init(void)
 ******************************************************************************/
 void App_Update(void)
 {
+	HAL_UART_Transmit(&huart2, (uint8_t*)Get_Application_State(), sizeof(Get_Application_State()), 500);
 	switch(Get_Application_State())
 	{
 		case MOLLY_DEV1:

@@ -33,21 +33,21 @@
 #define SENS_SEL_B_STATE(x) ((x & ((1 << 2)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
 #define SENS_SEL_C_STATE(x) ((x & ((1 << 3)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
 
-#define SENS_TMP                            0
-#define SENS_3TMP                           1
-#define SENS_DS                             2
-#define SENS_SHT                            3
+#define SENS_TMP                            '0'
+#define SENS_3TMP                           '1'
+#define SENS_DS                             '2'
+#define SENS_SHT                            '3'
 
 #define NUM_SENS_AVAILABLE                  4
 
 /* Node Select ---------------------------------------------------------------*/
-#define BOTH                                0
-#define NODE1                               1
-#define NODE2                               2
+#define BOTH                                '0'
+#define NODE1                               '1'
+#define NODE2                               '2'
 
-#define OFF                                 0
-#define ON                                  1
-#define CYCLE                               2
+#define OFF                                 '0'
+#define ON                                  '1'
+#define CYCLE                               '2'
 
 /* Setup Functions -----------------------------------------------------------*/
 void Error_Handler(void);

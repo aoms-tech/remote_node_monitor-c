@@ -65,7 +65,7 @@ uint8_t * brd_msg;
 #define SETMODE_SET_CHG_STATE				'j'
 #define SETMODE_SET_DEV_PWR					'k'
 
-#define PI_PROCESS_FIN 						'`'
+#define PROCESS_FIN 						'`'
 
 /* SKYLA1 UART Variables ------------------------------------------------------*/
 #define dev1_uart_buffer_size 5000
@@ -392,7 +392,7 @@ bool Dev_Restarted(uint16_t dev_send_flag, uint16_t dev_array_start, uint8_t tim
 	while (dev_send_flag == dev_array_start)
 	{
 		uint32_t time_elapsed = (time_start - HAL_GetTick());
-		printf("Waiting for device to startup. Time elapsed: %ld\n", time_elapsed);
+		printf("Waiting for device to startup. Time elapsed: %d\n", time_elapsed);
 
 		if (time_elapsed >= (timeout * 1000))
 		{
@@ -671,6 +671,7 @@ void Dev2_Molly_App(void)
 char Get_Pi_UART_Data_Last(uint16_t num_data)
 {
 	char pi_selected_data = ' ';
+	num_data -= 0;
 
 	uint16_t arr_data_index = pi_array_end;
 	if(pi_array_end < num_data)
@@ -681,7 +682,6 @@ char Get_Pi_UART_Data_Last(uint16_t num_data)
 	}
 
 	pi_selected_data = pi_uart_rxBuffer[arr_data_index];
-
 	return pi_selected_data;
 }
 
@@ -717,7 +717,7 @@ void Dev1_Program_App(void)
 			HAL_UART_Transmit(&huart1, (uint8_t*)"Ready to program Sklya1\r\n", 25, 1000);
 			HAL_Delay(100);
 			
-			while(pi_uart_rxData != PI_PROCESS_FIN)
+			while(pi_uart_rxData != PROCESS_FIN)
 			{
 			}
 			
@@ -746,7 +746,7 @@ void Dev2_Program_App(void)
 			HAL_UART_Transmit(&huart1, (uint8_t*)"Ready to program Sklya2\r\n", 25, 1000);
 			HAL_Delay(100);
 			
-			while(pi_uart_rxData != PI_PROCESS_FIN)
+			while(pi_uart_rxData != PROCESS_FIN)
 			{
 			}
 			
@@ -775,7 +775,7 @@ void Dev3_Program_App(void)
 			HAL_UART_Transmit(&huart1, (uint8_t*)"Ready to program Creed1\r\n", 25, 1000);
 			HAL_Delay(100);
 			
-			while(pi_uart_rxData != PI_PROCESS_FIN)
+			while(pi_uart_rxData != PROCESS_FIN)
 			{
 			}
 			
@@ -804,7 +804,7 @@ void Dev4_Program_App(void)
 			HAL_UART_Transmit(&huart1, (uint8_t*)"Ready to program Creed2\r\n", 25, 1000);
 			HAL_Delay(100);
 			
-			while(pi_uart_rxData != PI_PROCESS_FIN)
+			while(pi_uart_rxData != PROCESS_FIN)
 			{
 			}
 			
@@ -819,8 +819,9 @@ void Dev4_Program_App(void)
 
 void Set_Device_Power_App(void)
 {
-	uint8_t dev = (uint8_t) Get_Pi_UART_Data_Last(1);
-	uint8_t state = (uint8_t) Get_Pi_UART_Data_Last(2);
+	HAL_Delay(100);
+	char dev = (uint8_t) Get_Pi_UART_Data_Last(2);
+	char state = (uint8_t) Get_Pi_UART_Data_Last(1);
 
 	switch(state)
 	{
@@ -841,7 +842,7 @@ void Set_Device_Power_App(void)
 			break;
 	}
 
-	HAL_UART_Transmit(&huart1, (uint8_t*)"Power State Set \n", 17, 500);
+	HAL_UART_Transmit(&huart1, (uint8_t*)"Power Set \n", sizeof("Power Set "), 500);
 	application_state = DEFAULT;
 }
 
@@ -895,6 +896,7 @@ void Power_Dev_ON(uint8_t dev)
 				if(dev1_on)
 				{
 					HAL_UART_Transmit(&huart1, (uint8_t*)"Dev1 ON\n", 8, 500);
+					HAL_UART_Transmit(&huart2, (uint8_t*)"Dev1 ON\n", 8, 500);
 				}
 				break;
 			}
@@ -910,6 +912,7 @@ void Power_Dev_ON(uint8_t dev)
 				dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start, 30);
 				if(dev2_on)
 				{
+					HAL_UART_Transmit(&huart1, (uint8_t*)"Dev2 ON\n", 8, 500);
 					HAL_UART_Transmit(&huart2, (uint8_t*)"Dev2 ON\n", 8, 500);
 				}
 				break;
@@ -924,7 +927,7 @@ void Power_Dev_ON(uint8_t dev)
 }
 
 
-void Set_Sensor(uint8_t node, uint8_t selected_sensor)
+void Set_Sensor(uint8_t dev, uint8_t selected_sensor)
 {
 	if (selected_sensor > (NUM_SENS_AVAILABLE-1))
 	{
@@ -939,7 +942,7 @@ void Set_Sensor(uint8_t node, uint8_t selected_sensor)
 		    "SHT30"
 	};
 
-	switch(node)
+	switch(dev)
 	{
 		case BOTH:
 			Set_Sensor(NODE1, selected_sensor);
@@ -981,26 +984,32 @@ void Set_Sensor(uint8_t node, uint8_t selected_sensor)
 
 void Sensor_Select_App(void)
 {
-	char node = (uint8_t) Get_Pi_UART_Data_Last(1);
-	char sens_num = (uint8_t) Get_Pi_UART_Data_Last(2);
+	HAL_Delay(100);
+	char dev = (uint8_t) Get_Pi_UART_Data_Last(2);
+	char sens_num = (uint8_t) Get_Pi_UART_Data_Last(1);
 
-	Set_Sensor(node, sens_num);
+	Set_Sensor(dev, sens_num);
+	HAL_UART_Transmit(&huart1, (uint8_t*)"Sensor Selected \n", sizeof("Sensor Selected\n"),500);
 
 	application_state = DEFAULT;
 }
 
-void Set_Charger_State(int node, bool charger_state)
+void Set_Charger_State(uint8_t dev, uint8_t charger_state)
 {
-	switch(node)
+	switch(dev)
 	{
 		case BOTH:
 			Set_Charger_State(NODE1, charger_state);
 			Set_Charger_State(NODE2, charger_state);
+			break;
 		case NODE1:
 			HAL_GPIO_WritePin(DEV1_CHG_EN, (GPIO_PinState)charger_state);
+			break;
 		case NODE2:
 			HAL_GPIO_WritePin(DEV1_CHG_EN, (GPIO_PinState)charger_state);
+			break;
 		default:
+			HAL_UART_Transmit(&huart2, (uint8_t*)("Invalid device selected"), sizeof(("Invalid device selected")), 500);
 			printf("Invalid device selected");
 	}	
 }
@@ -1008,10 +1017,13 @@ void Set_Charger_State(int node, bool charger_state)
 
 void Set_Charger_App(void)
 {
-	char node = (uint8_t) Get_Pi_UART_Data_Last(1);
-	char chg_state = (uint8_t) Get_Pi_UART_Data_Last(2);
+	HAL_Delay(100);
 
-	Set_Charger_State(node, chg_state);
+	uint8_t dev = (uint8_t) Get_Pi_UART_Data_Last(2);
+	uint8_t chg_state = ((uint8_t) Get_Pi_UART_Data_Last(1));
+
+	Set_Charger_State(dev, chg_state);
+	HAL_UART_Transmit(&huart1, (uint8_t*)"Charger State Set \n", sizeof("Charger State Set\n"), 500);
 
 	application_state = DEFAULT;
 }
