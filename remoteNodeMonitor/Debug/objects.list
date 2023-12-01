@@ -1,7 +1,6 @@
 "./Core/App/APP.o"
 "./Core/App/main.o"
-"./Core/App/Chip/NODE_MONITOR_NUCLEOF446RE.o"
-"./Core/App/sCommon/Chips/ATMEGA4809.o"
+"./Core/App/Chip/TOASTER_NUCLEOF446RE.o"
 "./Core/Src/gpio.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
 "./Core/Src/stm32f4xx_it.o"

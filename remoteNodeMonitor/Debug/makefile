@@ -12,12 +12,23 @@ RM := rm -rf
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
--include Core/App/sCommon/Chips/subdir.mk
 -include Core/App/Chip/subdir.mk
 -include Core/App/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(CC_DEPS)),)
+-include $(CC_DEPS)
+endif
+ifneq ($(strip $(C++_DEPS)),)
+-include $(C++_DEPS)
+endif
+ifneq ($(strip $(C_UPPER_DEPS)),)
+-include $(C_UPPER_DEPS)
+endif
+ifneq ($(strip $(CXX_DEPS)),)
+-include $(CXX_DEPS)
+endif
 ifneq ($(strip $(S_DEPS)),)
 -include $(S_DEPS)
 endif
@@ -26,6 +37,9 @@ ifneq ($(strip $(S_UPPER_DEPS)),)
 endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
+endif
+ifneq ($(strip $(CPP_DEPS)),)
+-include $(CPP_DEPS)
 endif
 endif
 
@@ -66,8 +80,8 @@ all: main-build
 main-build: remoteNodeMonitor.elf secondary-outputs
 
 # Tool invocations
-remoteNodeMonitor.elf remoteNodeMonitor.map: $(OBJS) $(USER_OBJS) C:\Users\Jessica\ Doe\Documents\remote_node_monitor-c\remoteNodeMonitor\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "remoteNodeMonitor.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jessica Doe\Documents\remote_node_monitor-c\remoteNodeMonitor\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="remoteNodeMonitor.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+remoteNodeMonitor.elf remoteNodeMonitor.map: $(OBJS) $(USER_OBJS) C:\Users\CO-OP\Documents\remote_node_monitor-c\remoteNodeMonitor\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "remoteNodeMonitor.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\CO-OP\Documents\remote_node_monitor-c\remoteNodeMonitor\STM32F446RETX_FLASH.ld" -Wl,-Map="remoteNodeMonitor.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

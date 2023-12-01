@@ -7,6 +7,18 @@
 #include "APP.h"
 #include "main.h"
 
+/* State Machines Variables ---------------------------------------------------*/
+#define DEFAULT					0
+#define FIND_DEBUG				1
+#define GET_SETTINGS 			2
+#define GET_MSG_P1				3
+#define GET_MSG_P2				4
+#define MOLLY_P1				5
+#define MOLLY_P2				6
+#define GET_MSG_P3				7
+#define FINISH_MOLLY			8
+#define FINISH_PROGRAM			9
+
 /******************************************************************************
 * Function:    	void App_Init(void)
 * Description: 	Initializes application and resets all GPIO pins

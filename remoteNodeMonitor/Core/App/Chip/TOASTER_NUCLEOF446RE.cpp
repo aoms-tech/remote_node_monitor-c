@@ -11,6 +11,7 @@
 #include "stdio.h"
 #include "main.h"
 #include <vector>
+#include <string>
 
 //test change
 
@@ -27,11 +28,10 @@ void SystemClock_Config(void);
 #define MOLLY_P2				6
 #define GET_MSG_P3				7
 #define FINISH_MOLLY			8
+#define FINISH_PROGRAM			9
 
 uint8_t molly_dev1_state = DEFAULT;
 uint8_t molly_dev2_state = DEFAULT;
-
-#define FINISH_PROGRAM			9
 
 uint8_t program_dev1_state = DEFAULT;
 uint8_t program_dev2_state = DEFAULT;
@@ -105,6 +105,7 @@ uint16_t dev4_array_end = 0;
 uint16_t dev4_send_flag = 0;
 uint8_t dev4_uart_rxData;
 
+using namespace std;
 
 /******************************************************************************
 * Function:    	void Chip_Init(void)
@@ -376,6 +377,39 @@ void PrettySend_Skyla_Info_toPi(uint8_t *payload, uint8_t skyla_num, uint8_t bef
 	}
 }
 
+void Power_Cycle_Dev(uint8_t dev = BOTH)
+{
+	printf("Power cycling devices\n");
+	Power_Dev_OFF(dev);
+	printf("Waiting for 30 seconds...\n");
+	for (int i = 0; i > 30; i += 2)
+	{
+		HAL_Delay(2000);
+		printf("%d/30secs\r", i);
+	}
+	Power_Dev_ON(dev);
+}
+
+bool Dev_Restarted(uint16_t dev_send_flag, uint16_t dev_array_start, uint8_t timeout = 30)
+{
+	uint32_t time_start = HAL_GetTick();
+
+	while (dev_send_flag == dev_array_start)
+	{
+		uint32_t time_elapsed = (time_start - HAL_GetTick());
+		printf("Waiting for device to startup. Time elapsed: %d\n", time_elapsed);
+
+		if (time_elapsed >= (timeout * 1000))
+		{
+			return false;
+		}
+
+		HAL_Delay(1000);
+	}
+
+	return true;
+}
+
 void Dev1_Molly_App(void)
 {
 	switch(molly_dev1_state)
@@ -427,16 +461,20 @@ void Dev1_Molly_App(void)
 			break;
 
 		case MOLLY_P1:
-			if(Dev1_Find_Word("N"))
+			{
+				if(Dev1_Find_Word("N"))
+				{
 					dev1_new_data = 0;
-			char strC[500];
-			char * settings_char = "$$";
-			strncpy(strC, settings_char, 1);
-			strC[1] = '\0';
-			strcat(strC, (char*)payload);
-			HAL_UART_Transmit(&huart3, (uint8_t*) strC, strlen(strC), 50);
-			molly_dev1_state = MOLLY_P2;
-			break;
+				}
+				char strC[500];
+				char * settings_char = "$$";
+				strncpy(strC, settings_char, 1);
+				strC[1] = '\0';
+				strcat(strC, (char*)payload);
+				HAL_UART_Transmit(&huart3, (uint8_t*) strC, strlen(strC), 50);
+				molly_dev1_state = MOLLY_P2;
+				break;
+			}
 
 		case MOLLY_P2:
 			HAL_UART_Transmit(&huart1, (uint8_t*)"L| in molly \n", 13, 500);
@@ -550,16 +588,22 @@ void Dev2_Molly_App(void)
 			break;
 
 		case MOLLY_P1:
-			if(Dev2_Find_Word("N"))
+			{
+				if(Dev2_Find_Word("N"))
+				{
 					dev1_new_data = 0;
-			char strC[500];
-			char * settings_char = "$$";
-			strncpy(strC, settings_char, 1);
-			strC[1] = '\0';
-			strcat(strC, (char*)payload);
-			HAL_UART_Transmit(&huart5, (uint8_t*) strC, strlen(strC), 50);
-			molly_dev2_state = MOLLY_P2;
-			break;
+				}
+
+				char strC[500];
+				char * settings_char = "$$";
+				strncpy(strC, settings_char, 1);
+				strC[1] = '\0';
+				strcat(strC, (char*)payload);
+				HAL_UART_Transmit(&huart5, (uint8_t*) strC, strlen(strC), 50);
+				molly_dev2_state = MOLLY_P2;
+				break;
+			}
+
 
 		case MOLLY_P2:
 			HAL_UART_Transmit(&huart1, (uint8_t*)"L| in molly \n", 13, 500);
@@ -593,33 +637,63 @@ void Dev2_Molly_App(void)
 			break;
 
 		case GET_MSG_P3:
-			brd_msg = Dev2_GetInfo();
-			if(brd_msg[0] == '1')
 			{
-				PrettySend_Skyla_Info_toPi(brd_msg, 2, 0);
-				molly_dev2_state = FINISH_MOLLY;
+				brd_msg = Dev2_GetInfo();
+				if(brd_msg[0] == '1')
+				{
+					PrettySend_Skyla_Info_toPi(brd_msg, 2, 0);
+					molly_dev2_state = FINISH_MOLLY;
+				}
+				break;
 			}
-			break;
+
 
 		case FINISH_MOLLY:
-			HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_RESET);
-			HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
-
-			Power_Cycle_Dev(NODE2);
-			while(!(Dev_Restarted(dev2_send_flag, dev2_array_start)))
 			{
+				HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_RESET);
+				HAL_UART_Transmit(&huart1, (uint8_t*)"molly complete \r\n", 17, 1000);
+				Power_Cycle_Dev(NODE2);
+				while(!(Dev_Restarted(dev2_send_flag, dev2_array_start)))
+				{
+				}
+
+				molly_dev2_state = DEFAULT;
+				application_state = MONITOR;
+				break;
+			}
+		default:
+			{
+				HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
+				HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_SET);
+				molly_dev2_state = FIND_DEBUG;
+				break;
 			}
 
-			molly_dev2_state = DEFAULT;
-			application_state = MONITOR;
-			break;
-
-		default:
-			HAL_UART_Transmit(&huart1, (uint8_t*)"L| Received molly command. \r\n", 29, 1000);
-			HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_SET);
-			molly_dev2_state = FIND_DEBUG;
-			break;
 	}
+}
+
+
+
+/******************************************************************************
+* Function:    	vector<char> Get_Pi_UART_Data_Last(int num_data = 1)
+* Description: 	Returns the last number of data characters from the Pi
+* Parameters:  	Number of data char requested
+* Returns:     	vector<char> array of last num_data data char from Pi. Returned
+*				in received order
+******************************************************************************/
+
+vector<char> Get_Pi_UART_Data_Last(uint16_t num_data = 1)
+{
+	vector<char> pi_selected_data = {};
+
+	for(int i = 0; i < num_data; i++)
+	{
+		uint16_t arr_data_index = pi_array_end;
+		(pi_array_end < i) ? arr_data_index = pi_buffer_size - (i - pi_array_end) : arr_data_index -= i;
+		pi_selected_data[i] = pi_uart_rxBuffer[arr_data_index];
+	}
+
+	return pi_selected_data;
 }
 
 void Reset_Programmer_Relay(void)
@@ -750,33 +824,9 @@ void Dev4_Program_App(void)
 	}
 }
 
-bool Dev_Restarted(uint16_t dev_send_flag, uint16_t dev_array_start, uint8_t timeout = 30)
-{
-	uint32_t time_start = HAL_GetTick();
-	
-	while (dev_send_flag == dev_array_start)
-	{	
-		uint32_t time_elapsed = (time_start - HAL_GetTick());
-		printf("Waiting for device to startup. Time elapsed: %d\n", time_elapsed);
 
-		(time_elapsed >= (timeout * 1000)) ? return false : continue;
-		HAL_Delay(1000);
-	}
-	return true
-}
 
-void Power_Cycle_Dev(uint8_t dev = BOTH)
-{
-	printf("Power cycling devices\n")
-	Power_Dev_OFF(dev);
-	printf("Waiting for 30 seconds...\n")
-	for (int i = 0; i > 30; i += 2)
-	{
-		HAL_Delay(2000);
-		printf("%d/30secs\r", i)
-	}
-	Power_Dev_ON(dev);
-}
+
 
 void Set_Device_Power_App(void)
 {
@@ -799,15 +849,15 @@ void Set_Device_Power_App(void)
 			break;
 
 		default:
-			printf("Invalid state selected\n")
+			printf("Invalid state selected\n");
 			break;
 	}
 
-	HAL_UART_Transmit(&huart1, "Power State Set \n", 17, 500)
+	HAL_UART_Transmit(&huart1, (uint8_t*)"Power State Set \n", 17, 500);
 	application_state = DEFAULT;
 }
 
-void Power_Dev_OFF(uint8_t dev = BOTH)
+void Power_Dev_OFF(uint8_t dev)
 {
 	switch(dev)
 	{
@@ -816,7 +866,7 @@ void Power_Dev_OFF(uint8_t dev = BOTH)
 			Power_Dev_OFF(NODE2);
 			break;
 		case NODE1:
-			printf("Powering off Node1\n")
+			printf("Powering off Node1\n");
 			HAL_GPIO_WritePin(DEV1_3_SEN_PWR ,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV1_3_UART_RX_EN ,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV1_3_LTCH_EN ,GPIO_PIN_RESET);
@@ -824,7 +874,7 @@ void Power_Dev_OFF(uint8_t dev = BOTH)
 			HAL_GPIO_WritePin(DEV3_PWR_EN ,GPIO_PIN_RESET);
 			break;
 		case NODE2:
-			printf("Powering off Node2\n")
+			printf("Powering off Node2\n");
 			HAL_GPIO_WritePin(DEV2_4_SEN_PWR ,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV2_4_UART_RX_EN ,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(DEV2_4_LTCH_EN ,GPIO_PIN_RESET);
@@ -837,7 +887,7 @@ void Power_Dev_OFF(uint8_t dev = BOTH)
 	}
 }
 
-void Power_Dev_ON(uint8_t dev = BOTH)
+void Power_Dev_ON(uint8_t dev)
 {
 	switch(dev)
 	{
@@ -846,52 +896,99 @@ void Power_Dev_ON(uint8_t dev = BOTH)
 			Power_Dev_OFF(NODE2);
 			break;
 		case NODE1:
-			HAL_GPIO_WritePin(DEV1_3_SEN_PWR, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV1_3_UART_RX_EN, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV1_3_LTCH_EN ,GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV1_PWR_EN, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV3_PWR_EN, GPIO_PIN_SET);
-			bool dev1_on = false;
-			dev1_on = Dev_Restarted(dev1_send_flag, dev1_array_start);
-			(dev1_on) ? HAL_UART_Transmit(&huart1, "Dev1 ON\n", 8, 500) : continue;
+			{
+				HAL_GPIO_WritePin(DEV1_3_SEN_PWR, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV1_3_UART_RX_EN, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV1_3_LTCH_EN ,GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV1_PWR_EN, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV3_PWR_EN, GPIO_PIN_SET);
+				bool dev1_on = false;
+				dev1_on = Dev_Restarted(dev1_send_flag, dev1_array_start);
+				if(dev1_on)
+				{
+					HAL_UART_Transmit(&huart1, (uint8_t*)"Dev1 ON\n", 8, 500);
+				}
+				break;
+			}
 
-			break;
 		case NODE2:
-			HAL_GPIO_WritePin(DEV2_4_SEN_PWR, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV2_4_LTCH_EN ,GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV2_PWR_EN, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DEV4_PWR_EN, GPIO_PIN_SET);
-			bool dev2_on = false;
-			dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start);
-			(dev2_on) ? HAL_UART_Transmit(&huart2, "Dev2 ON\n", 8, 500) : continue;
+			{
+				HAL_GPIO_WritePin(DEV2_4_SEN_PWR, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV2_4_UART_RX_EN, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV2_4_LTCH_EN ,GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV2_PWR_EN, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(DEV4_PWR_EN, GPIO_PIN_SET);
+				bool dev2_on = false;
+				dev2_on = Dev_Restarted(dev2_send_flag, dev2_array_start);
+				if(dev2_on)
+				{
+					HAL_UART_Transmit(&huart2, (uint8_t*)"Dev2 ON\n", 8, 500);
+				}
+				break;
+			}
 
-			break;
 		default:
-			printf("Invalid node selected\n");
-			break;
+			{
+				printf("Invalid node selected\n");
+				break;
+			}
 	}
 }
 
-/******************************************************************************
-* Function:    	vector<char> Get_Pi_UART_Data_Last(int num_data = 1)
-* Description: 	Returns the last number of data characters from the Pi
-* Parameters:  	Number of data char requested
-* Returns:     	vector<char> array of last num_data data char from Pi. Returned
-*				in received order
-******************************************************************************/
-vector<char> Get_Pi_UART_Data_Last(uint16_t num_data = 1)
-{
-	vector<char> pi_selected_data[num_data] = {};
 
-	for(int i = 0, i < pi_selected_data.size(), i++)
+void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
+{
+	if (selected_sensor > (NUM_SENS_AVAILABLE-1))
 	{
-		uint16_t arr_data_index = pi_array_end;
-		(pi_array_end < i) ? arr_data_index = pi_buffer_size - (i - pi_array_end) : arr_data_index -= i;
-		pi_selected_data[i] = pi_uart_rxBuffer[arr_data_index];
+		printf("Invalid Sensor Selected\n");
+		return;
 	}
-	
-	return pi_selected_data;
+
+	string sensorName[NUM_SENS_AVAILABLE] = {
+	    "TMP107",
+	    "3x TMP107",
+	    "DS18B20",
+	    "SHT30"
+	};
+
+	switch(node)
+	{
+		case BOTH:
+			Set_Sensor(NODE1, selected_sensor);
+			Set_Sensor(NODE2, selected_sensor);
+			break;
+		case NODE1:
+			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_RESET);
+
+			Power_Dev_OFF(NODE1);
+
+			HAL_GPIO_WritePin(DEV1_3_SEL_A, SENS_SEL_A_STATE(selected_sensor));
+			HAL_GPIO_WritePin(DEV1_3_SEL_B, SENS_SEL_B_STATE(selected_sensor));
+			HAL_GPIO_WritePin(DEV1_3_SEL_C, SENS_SEL_C_STATE(selected_sensor));
+
+			printf("Node 1 %s sensor selected\n", sensorName[selected_sensor]);
+
+			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_SET);
+			break;
+		case NODE2:
+			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_RESET);
+
+			HAL_GPIO_WritePin(DEV2_4_SEL_A, SENS_SEL_A_STATE(selected_sensor));
+			HAL_GPIO_WritePin(DEV2_4_SEL_B, SENS_SEL_B_STATE(selected_sensor));
+			HAL_GPIO_WritePin(DEV2_4_SEL_C, SENS_SEL_C_STATE(selected_sensor));
+
+			printf("Node 2 %s sensor selected\n", sensorName[selected_sensor]);
+
+			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_SET);
+			break;
+		default:
+			printf("Invalid Node Selected\n");
+			break;
+	}
 }
 
 void Sensor_Select_App(void)
@@ -905,53 +1002,22 @@ void Sensor_Select_App(void)
 	application_state = DEFAULT;
 }
 
-void Set_Sensor(uint8_t node = BOTH, uint8_t selected_sensor = 0)
+void Set_Charger_State(int node = BOTH, bool charger_state = true)
 {
-	if (selected_sensor > (NUM_SENS_AVAILABLE-1))
-	{
-		printf("Invalid Sensor Selected\n")
-		return;
-	}
-
 	switch(node)
 	{
 		case BOTH:
-			Set_Sensor(NODE1, selected_sensor);
-			Set_Sensor(NODE2, selected_sensor);
-			break;
+			Set_Charger_State(NODE1, charger_state);
+			Set_Charger_State(NODE2, charger_state);
 		case NODE1:
-			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_RESET)
-			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_RESET)
-
-			Power_Dev_OFF(NODE1);
-
-			HAL_GPIO_WritePin(DEV1_3_SEL_A, SENS_SEL_A_STATE(selected_sensor));
-			HAL_GPIO_WritePin(DEV1_3_SEL_B, SENS_SEL_B_STATE(selected_sensor));
-			HAL_GPIO_WritePin(DEV1_3_SEL_C, SENS_SEL_C_STATE(selected_sensor));
-
-			printf("Node 1 " + sensorName[selected_sensor] + " sensor selected\n")
-
-			HAL_GPIO_WritePin(DEV1_3_LTCH_EN, GPIO_PIN_SET)
-			HAL_GPIO_WritePin(DEV1_3_MUX_INH, GPIO_PIN_SET)
-			break;
+			HAL_GPIO_WritePin(DEV1_CHG_EN, (GPIO_PinState)charger_state);
 		case NODE2:
-			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_RESET)
-			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_RESET)
-
-			HAL_GPIO_WritePin(DEV2_4_SEL_A, SENS_SEL_A_STATE(selected_sensor));
-			HAL_GPIO_WritePin(DEV2_4_SEL_B, SENS_SEL_B_STATE(selected_sensor));
-			HAL_GPIO_WritePin(DEV2_4_SEL_C, SENS_SEL_C_STATE(selected_sensor));
-
-			printf("Node 2 " + sensorName[selected_sensor] + " sensor selected\n")
-
-			HAL_GPIO_WritePin(DEV2_4_LTCH_EN, GPIO_PIN_SET)
-			HAL_GPIO_WritePin(DEV2_4_MUX_INH, GPIO_PIN_SET)
-			break;
+			HAL_GPIO_WritePin(DEV1_CHG_EN, (GPIO_PinState)charger_state);
 		default:
-			printf("Invalid Node Selected\n");
-			break;
-	}
+			printf("Invalid device selected");
+	}	
 }
+
 
 void Set_Charger_App(void)
 {
@@ -964,21 +1030,6 @@ void Set_Charger_App(void)
 	application_state = DEFAULT;
 }
 
-void Set_Charger_State(int node = BOTH, bool charger_state = true)
-{
-	switch(node)
-	{
-		case BOTH:
-			Set_Charger_State(NODE1, charger_state);
-			Set_Charger_State(NODE2, charger_state);
-		case NODE1:
-			HAL_GPIO_WritePin(DEV1_CHG_EN, charger_state);
-		case NODE2:
-			HAL_GPIO_WritePin(DEV1_CHG_EN, charger_state);
-		default:
-			printf("Invalid device selected")
-	}	
-}
 
 void Dev1_Check_Flag(void)
 {

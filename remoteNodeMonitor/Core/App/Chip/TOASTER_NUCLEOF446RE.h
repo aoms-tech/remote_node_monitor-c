@@ -11,9 +11,6 @@
 #include "gpio.h"
 #include <stdlib.h>
 #include <string.h>
-#include "DataTypes.h"
-#include <string>
-
 
 
 /* Program States -----------------------------------------------------------*/
@@ -29,6 +26,8 @@
 #define SET_CHG_STATE                       9 
 #define SET_DEV_PWR                         10
 
+
+
 /* Sensors Select ------------------------------------------------------------*/
 #define SENS_SEL_A_STATE(x) ((x & ((1 << 1)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
 #define SENS_SEL_B_STATE(x) ((x & ((1 << 2)-1)) ? GPIO_PIN_SET : GPIO_PIN_RESET)
@@ -40,12 +39,6 @@
 #define SENS_SHT                            3
 
 #define NUM_SENS_AVAILABLE                  4
-string sensorName[NUM_SENS_AVAILABLE] = {
-    "TMP107",
-    "3x TMP107",
-    "DS18B20",
-    "SHT30"
-}
 
 /* Node Select ---------------------------------------------------------------*/
 #define BOTH                                0
@@ -79,9 +72,9 @@ void Skyla2_Program_App(void);
 void Creed1_Program_App(void);
 void Creed2_Program_App(void);
 
-void Set_Device_Power_App(void)
-void Power_Dev_OFF(uint8_t node);
-void Power_Dev_ON(uint8_t node);
+void Set_Device_Power_App(void);
+void Power_Dev_OFF(uint8_t = BOTH);
+void Power_Dev_ON(uint8_t = BOTH);
 
 void Sensor_Select_App(void);
 void Set_Charger_App(void);

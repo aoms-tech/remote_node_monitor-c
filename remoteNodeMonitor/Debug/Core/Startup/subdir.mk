@@ -7,16 +7,16 @@
 S_SRCS += \
 ../Core/Startup/startup_stm32f446retx.s 
 
-OBJS += \
-./Core/Startup/startup_stm32f446retx.o 
-
 S_DEPS += \
 ./Core/Startup/startup_stm32f446retx.d 
+
+OBJS += \
+./Core/Startup/startup_stm32f446retx.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 Core/Startup/%.o: ../Core/Startup/%.s Core/Startup/subdir.mk
-	arm-none-eabi-gcc -mcpu=cortex-m4 -g3 -DDEBUG -c -I"C:/Users/Jessica Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App" -I"C:/Users/Jessica Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Chip" -I"C:/Users/Jessica Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon" -I"C:/Users/Jessica Doe/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/sCommon/Chips" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
+	arm-none-eabi-g++ -mcpu=cortex-m4 -g3 -DDEBUG -c -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App" -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/App/Chip" -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Core" -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/Inc" -I"C:/Users/CO-OP/Documents/remote_node_monitor-c/remoteNodeMonitor/Core/Src" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
 
 clean: clean-Core-2f-Startup
 
