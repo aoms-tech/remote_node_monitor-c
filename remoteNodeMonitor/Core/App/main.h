@@ -75,34 +75,97 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 //pin alias
 
-#define DEV2_4_MUX_INH      GPIOA,GPIO_PIN_4    //node2
-#define DEV1_3_LTCH_EN      GPIOA,GPIO_PIN_5    //node1
-#define DEV1_3_SEN_PWR      GPIOA,GPIO_PIN_8    //node1
-#define DEV2_4_LTCH_EN      GPIOA,GPIO_PIN_15   //node2
 
-#define DEV2_4_SEN_PWR      GPIOB,GPIO_PIN_0    //node2
-#define DEV2_PWR_EN         GPIOB,GPIO_PIN_4    //s2
-#define DEV4_PWR_EN         GPIOB,GPIO_PIN_5    //c2
-#define DEV2_UPDI_EN        GPIOB,GPIO_PIN_6    //s2
-#define DEV4_UPDI_EN        GPIOB,GPIO_PIN_7    //c2
-#define DEV2_4_UART_RX_EN   GPIOB,GPIO_PIN_8    //node2
-#define DEV2_CHG_EN         GPIOB,GPIO_PIN_9    //node2
-#define DEV2_4_VCC_EN       GPIOB,GPIO_PIN_12   //node2
-#define DEV2_4_SEL_C        GPIOB,GPIO_PIN_13   //node2
-#define DEV2_4_SEL_B        GPIOB,GPIO_PIN_14   //node2
+#define DEV2_4_MUX_INH(x)      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, (x))    //node2
+#define DEV1_3_LTCH_EN(x)     	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, (x))    //node1
+#define DEV1_PWR_EN(x)         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, (x))    //s1
+#define DEV3_PWR_EN(x)         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, (x))    //c1
+#define DEV1_3_SEN_PWR(x)      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, (x))    //node1
+#define DEV2_4_LTCH_EN(x)      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, (x))   //node2
 
-#define DEV1_3_SEL_A        GPIOC,GPIO_PIN_0    //node1
-#define DEV1_3_SEL_B        GPIOC,GPIO_PIN_1    //node1
-#define DEV1_3_SEL_C        GPIOC,GPIO_PIN_2    //node1
-#define DEV1_3_MUX_INH      GPIOC,GPIO_PIN_3    //node1
-#define DEV2_4_SEL_A        GPIOC,GPIO_PIN_4    //node2
-#define DEV1_PWR_EN         GPIOC,GPIO_PIN_6    //s1
-#define DEV3_PWR_EN         GPIOC,GPIO_PIN_7    //c1
-#define DEV1_UPDI_EN        GPIOC,GPIO_PIN_8    //s1
-#define DEV3_UPDI_EN        GPIOC,GPIO_PIN_9    //c1
-#define DEV1_3_UART_RX_EN   GPIOC,GPIO_PIN_10   //node1
-#define DEV1_CHG_EN         GPIOC,GPIO_PIN_11
-#define DEV1_3_VCC_EN       GPIOC,GPIO_PIN_13   //node1
+#define DEV2_4_SEN_PWR(x)      	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, (x))    //node2
+#define DEV2_PWR_EN(x)         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, (x))    //s2
+#define DEV4_PWR_EN(x)         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, (x))    //c2
+#define DEV2_UPDI_EN(x)        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, (x))    //s2
+#define DEV4_UPDI_EN(x)        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, (x))    //c2
+#define DEV2_4_UART_RX_EN(x)   	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, (x))    //node2
+#define DEV2_CHG_EN(x)         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, (x))    //node2
+#define DEV2_4_VCC_EN(x)       	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, (x))   //node2
+#define DEV2_4_SEL_C(x)        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, (x))   //node2
+#define DEV2_4_SEL_B(x)        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, (x))   //node2
+
+#define DEV1_3_SEL_A(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, (x))    //node1
+#define DEV1_3_SEL_B(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, (x))    //node1
+#define DEV1_3_SEL_C(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, (x))    //node1
+#define DEV1_3_MUX_INH(x)      	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, (x))    //node1
+#define DEV2_4_SEL_A(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, (x))    //node2
+#define DEV1_UPDI_EN(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, (x))    //s1
+#define DEV3_UPDI_EN(x)        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, (x))    //c1
+#define DEV1_3_UART_RX_EN(x)   	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, (x))   //node1
+#define DEV1_CHG_EN(x)         	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, (x))
+#define DEV1_3_VCC_EN(x)     	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, (x))   //node1
+
+
+
+#define DEV2_4_MUX_INH_RESET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)    //node2
+#define DEV1_3_LTCH_EN_RESET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET)    //node1
+#define DEV1_PWR_EN_RESET         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET)    //s1
+#define DEV3_PWR_EN_RESET         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET)    //c1
+#define DEV1_3_SEN_PWR_RESET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET)    //node1
+#define DEV2_4_LTCH_EN_RESET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET)   //node2
+
+#define DEV2_4_SEN_PWR_RESET      	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET)    //node2
+#define DEV2_PWR_EN_RESET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET)    //s2
+#define DEV4_PWR_EN_RESET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET)    //c2
+#define DEV2_UPDI_EN_RESET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET)    //s2
+#define DEV4_UPDI_EN_RESET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET)    //c2
+#define DEV2_4_UART_RX_EN_RESET   	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET)    //node2
+#define DEV2_CHG_EN_RESET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET)    //node2
+#define DEV2_4_VCC_EN_RESET       	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET)   //node2
+#define DEV2_4_SEL_C_RESET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET)   //node2
+#define DEV2_4_SEL_B_RESET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET)   //node2
+
+#define DEV1_3_SEL_A_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET)    //node1
+#define DEV1_3_SEL_B_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET)    //node1
+#define DEV1_3_SEL_C_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET)    //node1
+#define DEV1_3_MUX_INH_RESET      	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET)    //node1
+#define DEV2_4_SEL_A_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET)    //node2
+#define DEV1_UPDI_EN_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET)    //s1
+#define DEV3_UPDI_EN_RESET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET)    //c1
+#define DEV1_3_UART_RX_EN_RESET   	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET)   //node1
+#define DEV1_CHG_EN_RESET         	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET)
+#define DEV1_3_VCC_EN_RESET     	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET)   //node1
+
+
+#define DEV2_4_MUX_INH_SET			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)    //node2
+#define DEV1_3_LTCH_EN_SET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET)    //node1
+#define DEV1_PWR_EN_SET         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET)    //s1
+#define DEV3_PWR_EN_SET         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET)    //c1
+#define DEV1_3_SEN_PWR_SET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET)    //node1
+#define DEV2_4_LTCH_EN_SET      	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET)   //node2
+
+#define DEV2_4_SEN_PWR_SET      	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET)    //node2
+#define DEV2_PWR_EN_SET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET)    //s2
+#define DEV4_PWR_EN_SET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET)    //c2
+#define DEV2_UPDI_EN_SET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET)    //s2
+#define DEV4_UPDI_EN_SET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET)    //c2
+#define DEV2_4_UART_RX_EN_SET   	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET)    //node2
+#define DEV2_CHG_EN_SET         	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET)    //node2
+#define DEV2_4_VCC_EN_SET       	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET)   //node2
+#define DEV2_4_SEL_C_SET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET)   //node2
+#define DEV2_4_SEL_B_SET        	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET)   //node2
+
+#define DEV1_3_SEL_A_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET)    //node1
+#define DEV1_3_SEL_B_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET)    //node1
+#define DEV1_3_SEL_C_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET)    //node1
+#define DEV1_3_MUX_INH_SET      	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET)    //node1
+#define DEV2_4_SEL_A_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET)    //node2
+#define DEV1_UPDI_EN_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET)    //s1
+#define DEV3_UPDI_EN_SET        	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET)    //c1
+#define DEV1_3_UART_RX_EN_SET   	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET)   //node1
+#define DEV1_CHG_EN_SET         	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET)
+#define DEV1_3_VCC_EN_SET       	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET)   //node1
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

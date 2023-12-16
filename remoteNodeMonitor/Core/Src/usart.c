@@ -199,6 +199,7 @@ void MX_USART6_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART6_Init 2 */
+  huart6.Instance->CR1 |= USART_CR1_RXNEIE;
 
   /* USER CODE END USART6_Init 2 */
 

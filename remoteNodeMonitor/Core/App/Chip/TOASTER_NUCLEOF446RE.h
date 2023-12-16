@@ -73,8 +73,8 @@ void Dev3_Program_App(void);
 void Dev4_Program_App(void);
 
 void Set_Device_Power_App(void);
-void Power_Dev_OFF(uint8_t node);
-void Power_Dev_ON(uint8_t node);
+void Power_Dev_OFF(char node);
+void Power_Dev_ON(char node);
 
 void Sensor_Select_App(void);
 void Set_Charger_App(void);
